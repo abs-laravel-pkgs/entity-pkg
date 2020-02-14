@@ -122,9 +122,7 @@ app.component('entityTypeForm', {
                 'id': typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
             }
         }).then(function(response) {
-            self.entity = response.data.entity;
-            self.entity.entity_type_type_id = $routeParams.entity_type_type_id;
-            self.attachment = response.data.attachment;
+            self.entity_type = response.data.entity;
             self.action = response.data.action;
             self.theme = response.data.theme;
             $rootScope.loading = false;
@@ -175,9 +173,9 @@ app.component('entityTypeForm', {
                 }
             },
             messages: {
-                'logo_id': {
-                    extension: "Accept Image Files Only. Eg: jpg,jpeg,png,ico,bmp,svg,gif"
-                }
+                // 'logo_id': {
+                //     extension: "Accept Image Files Only. Eg: jpg,jpeg,png,ico,bmp,svg,gif"
+                // }
             },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
@@ -204,7 +202,7 @@ app.component('entityTypeForm', {
                                 custom_noty('error', errors);
                             } else {
                                 $('#submit').button('reset');
-                                $location.path('/entity-pkg/entity/list');
+                                $location.path('/entity-pkg/entity-type/list');
                                 $scope.$apply();
                             }
                         }

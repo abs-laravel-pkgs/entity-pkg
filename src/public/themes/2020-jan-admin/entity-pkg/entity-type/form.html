@@ -7,16 +7,16 @@
                     <div class="page-header-content">
                         <div class="page-header-inner page-title display-inline-block">
                             <div class="previous-page">
-                                <a href="#!/entity-pkg/entity/list">
+                                <a href="#!/entity-pkg/entity-type/list">
                                     <img src="./public/themes/{{$ctrl.theme}}/img/content/previous.svg" class="img-responsive">
                                 </a>
                             </div>
                         </div><!-- Page Header Inner -->
                         <div class="page-header-inner page-title display-inline-block">
-                            <h1 class="title">{{$ctrl.action}} Entity</h1>
+                            <h1 class="title">{{$ctrl.action}} Entity Type</h1>
                             <p class="subtitle">
-                                <a href="#!/entity-pkg/entity/list">
-                                    Entities List
+                                <a href="#!/entity-pkg/entity-type/list">
+                                    Entity Types
                                 </a> /
                                 {{$ctrl.action}}
                             </p>
@@ -29,8 +29,7 @@
     <!-- Page Main Content -->
     <div class="page-main-content">
         <form id="form" autocomplete="off" enctype="multipart/form-data">
-            <input type="hidden" name="id" value="{{$ctrl.entity.id}}">
-            <input type="hidden" name="entity_type_id" value="{{$ctrl.entity.entity_type_id}}">
+            <input type="hidden" name="id" value="{{$ctrl.entity_type.id}}">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
@@ -62,7 +61,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="name" ng-model='$ctrl.entity.name' class="form-control required" placeholder="Enter Name" autocomplete="off" minlength="3" maxlength="191">
+                                                            <input type="text" name="name" ng-model='$ctrl.entity_type.name' class="form-control required" placeholder="Enter Name" autocomplete="off" minlength="3" maxlength="191">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
