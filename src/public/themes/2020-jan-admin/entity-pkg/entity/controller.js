@@ -18,7 +18,7 @@ app.config(['$routeProvider', function($routeProvider) {
         template: '<entity-list></entity-list>',
         title: 'Entity List',
     }).
-    when('/entity-pkg/entity/add:entity_type_id', {
+    when('/entity-pkg/entity/add/:entity_type_id', {
         template: '<entity-form></entity-form>',
         title: 'Add Entity',
     }).
@@ -77,7 +77,7 @@ app.component('entityList', {
         $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
         $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
         $('.add_new_button').html(
-            '<a href="#!/entity-pkg/entity/add" type="button" class="btn btn-secondary" dusk="add-btn">' +
+            '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
             'Add Entity' +
             '</a>'
         );
