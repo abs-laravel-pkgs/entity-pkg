@@ -2,7 +2,7 @@
 
 namespace Abs\EntityPkg;
 use Abs\Basic\Attachment;
-use Abs\EntityPkg\Entity;
+use Abs\EntityPkg\EntityType;
 use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Validator;
 use Yajra\Datatables\Datatables;
 
-class EntityController extends Controller {
+class EntityTypeController extends Controller {
 
 	private $company_id;
 	public function __construct() {
@@ -19,14 +19,14 @@ class EntityController extends Controller {
 		$this->company_id = config('custom.company_id');
 	}
 
-	public function getEntitys(Request $request) {
-		$this->data['entities'] = Entity::
+	public function getEntityTypes(Request $request) {
+		$this->data['entity_types'] = EntityType::
 			select([
-			'entities.question',
-			'entities.answer',
+			'entity_types.question',
+			'entity_types.answer',
 		])
-			->where('entities.company_id', $this->company_id)
-			->orderby('entities.display_order', 'asc')
+			->where('entity_types.company_id', $this->company_id)
+			->orderby('entity_types.display_order', 'asc')
 			->get()
 		;
 		$this->data['success'] = true;
@@ -35,50 +35,50 @@ class EntityController extends Controller {
 
 	}
 
-	public function getEntityList(Request $r) {
-		$entities = Entity::withTrashed()
+	public function getEntityTypeList(Request $r) {
+		$entity_types = EntityType::withTrashed()
 			->select([
-				'entities.id',
-				'entities.name',
-				DB::raw('IF(entities.deleted_at IS NULL, "Active","Inactive") as status'),
+				'entity_types.id',
+				'entity_types.name',
+				DB::raw('IF(entity_types.deleted_at IS NULL, "Active","Inactive") as status'),
 			])
-			->where('entities.company_id', $this->company_id)
-			->where('entities.entity_type_id', $r->entity_type_id)
+			->where('entity_types.company_id', $this->company_id)
+			->where('entity_types.entity_type_id', $r->entity_type_id)
 
 		/*->where(function ($query) use ($request) {
 				if (!empty($request->question)) {
-					$query->where('entities.question', 'LIKE', '%' . $request->question . '%');
+					$query->where('entity_types.question', 'LIKE', '%' . $request->question . '%');
 				}
 			})*/
-			->orderby('entities.id', 'desc');
+			->orderby('entity_types.id', 'desc');
 
-		return Datatables::of($entities)
-			->addColumn('name', function ($entities) {
-				$status = $entities->status == 'Active' ? 'green' : 'red';
-				return '<span class="status-indicator ' . $status . '"></span>' . $entities->name;
+		return Datatables::of($entity_types)
+			->addColumn('name', function ($entity_types) {
+				$status = $entity_types->status == 'Active' ? 'green' : 'red';
+				return '<span class="status-indicator ' . $status . '"></span>' . $entity_types->name;
 			})
-			->addColumn('action', function ($entities) {
+			->addColumn('action', function ($entity_types) {
 				$img1 = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');
 				$img1_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
 				$img_delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$img_delete_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
 				$output = '';
-				$output .= '<a href="#!/entity-pkg/entity/edit/' . $entities->id . '" id = "" ><img src="' . $img1 . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $img1_active . '" onmouseout=this.src="' . $img1 . '"></a>
-					<a href="javascript:;" data-toggle="modal" data-target="#entity-delete-modal" onclick="angular.element(this).scope().deleteEntity(' . $entities->id . ')" title="Delete"><img src="' . $img_delete . '" alt="Delete" class="img-responsive delete" onmouseover=this.src="' . $img_delete_active . '" onmouseout=this.src="' . $img_delete . '"></a>
+				$output .= '<a href="#!/entity-pkg/entity/edit/' . $entity_types->id . '" id = "" ><img src="' . $img1 . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $img1_active . '" onmouseout=this.src="' . $img1 . '"></a>
+					<a href="javascript:;" data-toggle="modal" data-target="#entity-delete-modal" onclick="angular.element(this).scope().deleteEntityType(' . $entity_types->id . ')" title="Delete"><img src="' . $img_delete . '" alt="Delete" class="img-responsive delete" onmouseover=this.src="' . $img_delete_active . '" onmouseout=this.src="' . $img_delete . '"></a>
 					';
 				return $output;
 			})
 			->make(true);
 	}
 
-	public function getEntityFormData(Request $r) {
+	public function getEntityTypeFormData(Request $r) {
 		$id = $r->id;
 		if (!$id) {
-			$entity = new Entity;
+			$entity = new EntityType;
 			$attachment = new Attachment;
 			$action = 'Add';
 		} else {
-			$entity = Entity::withTrashed()->find($id);
+			$entity = EntityType::withTrashed()->find($id);
 			$attachment = Attachment::where('id', $entity->logo_id)->first();
 			$action = 'Edit';
 		}
@@ -90,7 +90,7 @@ class EntityController extends Controller {
 		return response()->json($this->data);
 	}
 
-	public function saveEntity(Request $request) {
+	public function saveEntityType(Request $request) {
 		try {
 			$error_messages = [
 				'name.required' => 'Name is Required',
@@ -99,7 +99,7 @@ class EntityController extends Controller {
 			$validator = Validator::make($request->all(), [
 				'name' => [
 					'required:true',
-					'unique:entities,name,' . $request->id . ',id,company_id,' . Auth::user()->company_id,
+					'unique:entity_types,name,' . $request->id . ',id,company_id,' . Auth::user()->company_id,
 				],
 			], $error_messages);
 			if ($validator->fails()) {
@@ -108,12 +108,12 @@ class EntityController extends Controller {
 
 			DB::beginTransaction();
 			if (!$request->id) {
-				$entity = new Entity;
+				$entity = new EntityType;
 				$entity->created_by_id = Auth::user()->id;
 				$entity->created_at = Carbon::now();
 				$entity->updated_at = NULL;
 			} else {
-				$entity = Entity::withTrashed()->find($request->id);
+				$entity = EntityType::withTrashed()->find($request->id);
 				$entity->updated_by_id = Auth::user()->id;
 				$entity->updated_at = Carbon::now();
 			}
@@ -132,12 +132,12 @@ class EntityController extends Controller {
 			if (!($request->id)) {
 				return response()->json([
 					'success' => true,
-					'message' => 'Entity Added Successfully',
+					'message' => 'EntityType Added Successfully',
 				]);
 			} else {
 				return response()->json([
 					'success' => true,
-					'message' => 'Entity Updated Successfully',
+					'message' => 'EntityType Updated Successfully',
 				]);
 			}
 		} catch (Exceprion $e) {
@@ -149,17 +149,17 @@ class EntityController extends Controller {
 		}
 	}
 
-	public function deleteEntity(Request $request) {
+	public function deleteEntityType(Request $request) {
 		DB::beginTransaction();
 		try {
-			$entity = Entity::withTrashed()->where('id', $request->id)->first();
+			$entity = EntityType::withTrashed()->where('id', $request->id)->first();
 			if (!is_null($entity->logo_id)) {
 				Attachment::where('company_id', Auth::user()->company_id)->where('attachment_of_id', 20)->where('entity_id', $request->id)->forceDelete();
 			}
-			Entity::withTrashed()->where('id', $request->id)->forceDelete();
+			EntityType::withTrashed()->where('id', $request->id)->forceDelete();
 
 			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Entity Deleted Successfully']);
+			return response()->json(['success' => true, 'message' => 'EntityType Deleted Successfully']);
 		} catch (Exception $e) {
 			DB::rollBack();
 			return response()->json(['success' => false, 'errors' => ['Exception Error' => $e->getMessage()]]);

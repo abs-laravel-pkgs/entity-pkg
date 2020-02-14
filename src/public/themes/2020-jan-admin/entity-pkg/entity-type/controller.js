@@ -1,10 +1,10 @@
-app.component('entityList', {
-    templateUrl: entity_list_template_url,
+app.component('entityTypeList', {
+    templateUrl: entity_type_list_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
-        var dataTable = $('#entities_list').DataTable({
+        var dataTable = $('#entity_types_list').DataTable({
             "dom": dom_structure,
             "language": {
                 "search": "",
@@ -22,14 +22,14 @@ app.component('entityList', {
             paging: true,
             ordering: false,
             ajax: {
-                url: laravel_routes['getEntityList'],
+                url: laravel_routes['getEntityTypeList'],
                 data: function(d) {
-                    entity_type_id: $routeParams.entity_type_id
+                    entity_type_type_id: $routeParams.entity_type_type_id
                 }
             },
             columns: [
                 { data: 'action', searchable: false, class: 'action' },
-                { data: 'name', name: 'entities.name', searchable: true },
+                { data: 'name', name: 'entity_types.name', searchable: true },
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total + '/' + max)
@@ -42,31 +42,31 @@ app.component('entityList', {
             },
         });
         $('.dataTables_length select').select2();
-        $('.page-header-content .display-inline-block .data-table-title').html('Entitys <span class="badge badge-secondary" id="table_info">0</span>');
+        $('.page-header-content .display-inline-block .data-table-title').html('Entity Types <span class="badge badge-secondary" id="table_info">0</span>');
         $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
         $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
         $('.add_new_button').html(
-            '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
-            'Add Entity' +
+            '<a href="#!/entity-pkg/entity-type/add/" type="button" class="btn btn-secondary" dusk="add-btn">' +
+            'Add Entity Type' +
             '</a>'
         );
 
         $('.btn-add-close').on("click", function() {
-            $('#entities_list').DataTable().search('').draw();
+            $('#entity_types_list').DataTable().search('').draw();
         });
 
         $('.btn-refresh').on("click", function() {
-            $('#entities_list').DataTable().ajax.reload();
+            $('#entity_types_list').DataTable().ajax.reload();
         });
 
         //DELETE
-        $scope.deleteEntity = function($id) {
-            $('#entity_id').val($id);
+        $scope.deleteEntityType = function($id) {
+            $('#entity_type_id').val($id);
         }
         $scope.deleteConfirm = function() {
-            $id = $('#entity_id').val();
+            $id = $('#entity_type_id').val();
             $http.get(
-                laravel_routes['deleteEntity'], {
+                laravel_routes['deleteEntityType'], {
                     params: {
                         id: $id,
                     }
@@ -74,7 +74,7 @@ app.component('entityList', {
             ).then(function(response) {
                 if (response.data.success) {
                     custom_noty('success', response.data.message);
-                    $('#entities_list').DataTable().ajax.reload();
+                    $('#entity_types_list').DataTable().ajax.reload();
                     $scope.$apply();
                 } else {
                     custom_noty('error', response.data.errors);
@@ -83,10 +83,10 @@ app.component('entityList', {
         }
 
         //FOR FILTER
-        /*$('#entity_code').on('keyup', function() {
+        /*$('#entity_type_code').on('keyup', function() {
             dataTables.fnFilter();
         });
-        $('#entity_name').on('keyup', function() {
+        $('#entity_type_name').on('keyup', function() {
             dataTables.fnFilter();
         });
         $('#mobile_no').on('keyup', function() {
@@ -96,8 +96,8 @@ app.component('entityList', {
             dataTables.fnFilter();
         });
         $scope.reset_filter = function() {
-            $("#entity_name").val('');
-            $("#entity_code").val('');
+            $("#entity_type_name").val('');
+            $("#entity_type_code").val('');
             $("#mobile_no").val('');
             $("#email").val('');
             dataTables.fnFilter();
@@ -108,22 +108,22 @@ app.component('entityList', {
 });
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
-app.component('entityForm', {
-    templateUrl: entity_form_template_url,
+app.component('entityTypeForm', {
+    templateUrl: entity_type_form_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope) {
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
         fileUpload();
         $http({
-            url: laravel_routes['getEntityFormData'],
+            url: laravel_routes['getEntityTypeFormData'],
             method: 'GET',
             params: {
                 'id': typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
             }
         }).then(function(response) {
             self.entity = response.data.entity;
-            self.entity.entity_type_id = $routeParams.entity_type_id;
+            self.entity.entity_type_type_id = $routeParams.entity_type_type_id;
             self.attachment = response.data.attachment;
             self.action = response.data.action;
             self.theme = response.data.theme;
@@ -135,7 +135,7 @@ app.component('entityForm', {
                     self.switch_value = 'Active';
                 }
                 if (self.attachment) {
-                    $scope.PreviewImage = 'public/themes/' + self.theme + '/img/entity_logo/' + self.attachment.name;
+                    $scope.PreviewImage = 'public/themes/' + self.theme + '/img/entity_type_logo/' + self.attachment.name;
                     $('#edited_file_name').val(self.attachment.name);
                 } else {
                     $('#edited_file_name').val('');
@@ -170,7 +170,7 @@ app.component('entityForm', {
                     minlength: 3,
                     maxlength: 191,
                 },
-                'entity_type_id': {
+                'entity_type_type_id': {
                     required: true,
                 }
             },
@@ -183,7 +183,7 @@ app.component('entityForm', {
                 let formData = new FormData($(form_id)[0]);
                 $('#submit').button('loading');
                 $.ajax({
-                        url: laravel_routes['saveEntity'],
+                        url: laravel_routes['saveEntityType'],
                         method: "POST",
                         data: formData,
                         processData: false,

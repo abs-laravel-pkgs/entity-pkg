@@ -8,10 +8,10 @@ use App\Config;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Entity extends Model {
+class EntityType extends Model {
 	use SeederTrait;
 	use SoftDeletes;
-	protected $table = 'entities';
+	protected $table = 'entity_types';
 	public $timestamps = true;
 	protected $fillable = [
 		'name',
