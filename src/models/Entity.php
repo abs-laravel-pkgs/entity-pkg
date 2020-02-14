@@ -16,6 +16,7 @@ class Entity extends Model {
 	protected $fillable = [
 		'name',
 		'entity_type_id',
+		'company_id',
 	];
 
 	public static function createFromObject($record_data) {
