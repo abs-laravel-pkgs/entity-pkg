@@ -24,7 +24,7 @@ app.component('entityList', {
             ajax: {
                 url: laravel_routes['getEntityList'],
                 data: function(d) {
-                    entity_type_id: $routeParams.entity_type_id
+                    d.entity_type_id = $routeParams.entity_type_id;
                 }
             },
             columns: [
@@ -124,7 +124,6 @@ app.component('entityForm', {
         }).then(function(response) {
             self.entity = response.data.entity;
             self.entity.entity_type_id = $routeParams.entity_type_id;
-            self.attachment = response.data.attachment;
             self.action = response.data.action;
             self.theme = response.data.theme;
             $rootScope.loading = false;
@@ -133,12 +132,6 @@ app.component('entityForm', {
                     self.switch_value = 'Inactive';
                 } else {
                     self.switch_value = 'Active';
-                }
-                if (self.attachment) {
-                    $scope.PreviewImage = 'public/themes/' + self.theme + '/img/entity_logo/' + self.attachment.name;
-                    $('#edited_file_name').val(self.attachment.name);
-                } else {
-                    $('#edited_file_name').val('');
                 }
             } else {
                 self.switch_value = 'Active';
@@ -158,11 +151,7 @@ app.component('entityForm', {
         var v = jQuery(form_id).validate({
             ignore: '',
             errorPlacement: function(error, element) {
-                if (element.attr("name") == "logo_id") {
-                    error.insertAfter("#attachment_error");
-                } else {
-                    error.insertAfter(element);
-                }
+                error.insertAfter(element);
             },
             rules: {
                 'name': {
@@ -175,9 +164,9 @@ app.component('entityForm', {
                 }
             },
             messages: {
-                'logo_id': {
-                    extension: "Accept Image Files Only. Eg: jpg,jpeg,png,ico,bmp,svg,gif"
-                }
+                // 'logo_id': {
+                //     extension: "Accept Image Files Only. Eg: jpg,jpeg,png,ico,bmp,svg,gif"
+                // }
             },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
@@ -190,23 +179,17 @@ app.component('entityForm', {
                         contentType: false,
                     })
                     .done(function(res) {
-                        if (res.success == true) {
+                        if (res.success) {
                             custom_noty('success', res.message)
-                            $location.path('/entity-pkg/entity/list');
+                            $location.path('/entity-pkg/entity/list/' + $routeParams.entity_type_id);
                             $scope.$apply();
                         } else {
-                            if (!res.success == true) {
-                                $('#submit').button('reset');
-                                var errors = '';
-                                for (var i in res.errors) {
-                                    errors += '<li>' + res.errors[i] + '</li>';
-                                }
-                                custom_noty('error', errors);
-                            } else {
-                                $('#submit').button('reset');
-                                $location.path('/entity-pkg/entity/list');
-                                $scope.$apply();
+                            $('#submit').button('reset');
+                            var errors = '';
+                            for (var i in res.errors) {
+                                errors += '<li>' + res.errors[i] + '</li>';
                             }
+                            custom_noty('error', errors);
                         }
                     })
                     .fail(function(xhr) {

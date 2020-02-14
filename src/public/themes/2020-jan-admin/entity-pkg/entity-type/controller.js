@@ -127,16 +127,10 @@ app.component('entityTypeForm', {
             self.theme = response.data.theme;
             $rootScope.loading = false;
             if (self.action == 'Edit') {
-                if (self.entity.deleted_at) {
+                if (self.entity_type.deleted_at) {
                     self.switch_value = 'Inactive';
                 } else {
                     self.switch_value = 'Active';
-                }
-                if (self.attachment) {
-                    $scope.PreviewImage = 'public/themes/' + self.theme + '/img/entity_type_logo/' + self.attachment.name;
-                    $('#edited_file_name').val(self.attachment.name);
-                } else {
-                    $('#edited_file_name').val('');
                 }
             } else {
                 self.switch_value = 'Active';
@@ -156,11 +150,7 @@ app.component('entityTypeForm', {
         var v = jQuery(form_id).validate({
             ignore: '',
             errorPlacement: function(error, element) {
-                if (element.attr("name") == "logo_id") {
-                    error.insertAfter("#attachment_error");
-                } else {
-                    error.insertAfter(element);
-                }
+                error.insertAfter(element);
             },
             rules: {
                 'name': {
@@ -168,9 +158,6 @@ app.component('entityTypeForm', {
                     minlength: 3,
                     maxlength: 191,
                 },
-                'entity_type_type_id': {
-                    required: true,
-                }
             },
             messages: {
                 // 'logo_id': {
@@ -188,23 +175,17 @@ app.component('entityTypeForm', {
                         contentType: false,
                     })
                     .done(function(res) {
-                        if (res.success == true) {
+                        if (res.success) {
                             custom_noty('success', res.message)
-                            $location.path('/entity-pkg/entity/list');
+                            $location.path('/entity-pkg/entity-type/list');
                             $scope.$apply();
                         } else {
-                            if (!res.success == true) {
-                                $('#submit').button('reset');
-                                var errors = '';
-                                for (var i in res.errors) {
-                                    errors += '<li>' + res.errors[i] + '</li>';
-                                }
-                                custom_noty('error', errors);
-                            } else {
-                                $('#submit').button('reset');
-                                $location.path('/entity-pkg/entity-type/list');
-                                $scope.$apply();
+                            $('#submit').button('reset');
+                            var errors = '';
+                            for (var i in res.errors) {
+                                errors += '<li>' + res.errors[i] + '</li>';
                             }
+                            custom_noty('error', errors);
                         }
                     })
                     .fail(function(xhr) {
