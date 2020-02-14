@@ -53,6 +53,7 @@ class EntityController extends Controller {
 			->orderby('entities.id', 'desc');
 
 		return Datatables::of($entities)
+			->rawColumns(['action', 'name'])
 			->addColumn('name', function ($entities) {
 				$status = $entities->status == 'Active' ? 'green' : 'red';
 				return '<span class="status-indicator ' . $status . '"></span>' . $entities->name;
