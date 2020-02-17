@@ -4,6 +4,27 @@ app.component('entityList', {
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
+
+        $http({
+            url: laravel_routes['getEntityTypeData'],
+            method: 'GET',
+            params: {
+                'entity_type_id': typeof($routeParams.entity_type_id) == 'undefined' ? null : $routeParams.entity_type_id,
+            }
+        }).then(function(response) {
+            self.entity_type = response.data.entity_type;
+            console.log(response.data.entity_type);
+            $('.dataTables_length select').select2();
+        $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
+        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
+        $('.add_new_button').html(
+            '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
+            'Add ' + self.entity_type.name +
+            '</a>'
+        );
+        });
+        
         var dataTable = $('#entities_list').DataTable({
             "dom": dom_structure,
             "language": {
@@ -41,15 +62,8 @@ app.component('entityList', {
                 $('.search label input').focus();
             },
         });
-        $('.dataTables_length select').select2();
-        $('.page-header-content .display-inline-block .data-table-title').html('Entitys <span class="badge badge-secondary" id="table_info">0</span>');
-        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
-        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
-        $('.add_new_button').html(
-            '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
-            'Add Entity' +
-            '</a>'
-        );
+
+        
 
         $('.btn-add-close').on("click", function() {
             $('#entities_list').DataTable().search('').draw();
@@ -120,9 +134,12 @@ app.component('entityForm', {
             method: 'GET',
             params: {
                 'id': typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
+                'entity_type_id': typeof($routeParams.entity_type_id) == 'undefined' ? null : $routeParams.entity_type_id,
             }
         }).then(function(response) {
             self.entity = response.data.entity;
+            self.entity_type = response.data.entity_type;
+            //console.log(response.data.entity);
             self.entity.entity_type_id = $routeParams.entity_type_id;
             self.action = response.data.action;
             self.theme = response.data.theme;
@@ -146,7 +163,8 @@ app.component('entityForm', {
             };
             reader.readAsDataURL(e.target.files[0]);
         };
-
+        console.log('self');
+        console.log(self);
         var form_id = '#form';
         var v = jQuery(form_id).validate({
             ignore: '',
@@ -181,7 +199,7 @@ app.component('entityForm', {
                     .done(function(res) {
                         if (res.success) {
                             custom_noty('success', res.message)
-                            $location.path('/entity-pkg/entity/list/' + $routeParams.entity_type_id);
+                            $location.path('/entity-pkg/entity/list/' + self.entity_type.id);
                             $scope.$apply();
                         } else {
                             $('#submit').button('reset');

@@ -3,6 +3,7 @@
 namespace Abs\EntityPkg;
 use Abs\Basic\Attachment;
 use Abs\EntityPkg\Entity;
+use Abs\EntityPkg\EntityType;
 use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
@@ -34,13 +35,25 @@ class EntityController extends Controller {
 		return response()->json($this->data);
 
 	}
-
+	public function getEntityTypeData(Request $r){
+		//dd('s');
+		$this->data['entity_type'] = $entity_type = DB::table('entity_types')->find($r->entity_type_id);
+		//dd($entity_type);
+		if($entity_type){
+			$this->data['success'] = true;
+			return response()->json($this->data);
+		}else{
+			return response()->json(['success' => false]);
+		}
+	}
 	public function getEntityList(Request $r) {
 		$entities = Entity::withTrashed()
 			->select([
 				'entities.id',
 				'entities.name',
+				'entities.entity_type_id',
 				DB::raw('IF(entities.deleted_at IS NULL, "Active","Inactive") as status'),
+
 			])
 			->where('entities.company_id', $this->company_id)
 			->where('entities.entity_type_id', $r->entity_type_id)
@@ -77,10 +90,12 @@ class EntityController extends Controller {
 		if (!$id) {
 			$entity = new Entity;
 			$attachment = new Attachment;
+			$this->data['entity_type'] = DB::table('entity_types')->find($r->entity_type_id);
 			$action = 'Add';
 		} else {
-			$entity = Entity::withTrashed()->find($id);
+			$entity = Entity::withTrashed()->where('id',$id)->first();
 			$attachment = Attachment::where('id', $entity->logo_id)->first();
+			$this->data['entity_type'] = DB::table('entity_types')->find($entity->entity_type_id);
 			$action = 'Edit';
 		}
 		$this->data['entity'] = $entity;
@@ -88,6 +103,7 @@ class EntityController extends Controller {
 		$this->data['action'] = $action;
 		$this->data['theme'];
 
+		//dd($this->data);
 		return response()->json($this->data);
 	}
 

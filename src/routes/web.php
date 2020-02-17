@@ -10,6 +10,7 @@ Route::group(['namespace' => 'Abs\EntityPkg', 'middleware' => ['web', 'auth'], '
 	//Entity
 	Route::get('/entities/get-list', 'EntityController@getEntityList')->name('getEntityList');
 	Route::get('/entity/get-form-data', 'EntityController@getEntityFormData')->name('getEntityFormData');
+	Route::get('/entity/get-entity-type-data/', 'EntityController@getEntityTypeData')->name('getEntityTypeData');
 	Route::post('/entity/save', 'EntityController@saveEntity')->name('saveEntity');
 	Route::get('/entity/delete', 'EntityController@deleteEntity')->name('deleteEntity');
 
