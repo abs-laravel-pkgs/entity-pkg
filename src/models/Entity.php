@@ -19,6 +19,10 @@ class Entity extends Model {
 		'company_id',
 	];
 
+	public function entityTypes(){
+		return $this->belongsTo('Abs\EntityPkg\EntityType');
+	}
+
 	public static function createFromObject($record_data) {
 
 		$errors = [];

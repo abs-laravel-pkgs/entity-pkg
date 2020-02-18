@@ -61,10 +61,10 @@ app.component('entityTypeList', {
 
         //DELETE
         $scope.deleteEntityType = function($id) {
-            $('#entity_type_id').val($id);
+            self.entitytype_id = $id;
         }
-        $scope.deleteConfirm = function() {
-            $id = $('#entity_type_id').val();
+        $scope.deleteConfirm = function($id) {
+            //$id = $('#entity_type_id').val();
             $http.get(
                 laravel_routes['deleteEntityType'], {
                     params: {
@@ -122,9 +122,12 @@ app.component('entityTypeForm', {
                 'id': typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
             }
         }).then(function(response) {
-            self.entity_type = response.data.entity;
+            console.log(response);
+            self.entity_type = response.data.entity_type;
+            self.entities = response.data.entities;
             self.action = response.data.action;
             self.theme = response.data.theme;
+            self.removed_entity_ids =[];
             $rootScope.loading = false;
             if (self.action == 'Edit') {
                 if (self.entity_type.deleted_at) {
@@ -133,8 +136,18 @@ app.component('entityTypeForm', {
                     self.switch_value = 'Active';
                 }
             } else {
+                $scope.addEntity();
                 self.switch_value = 'Active';
             }
+            //console.log(response.data.entities);
+            angular.forEach(response.data.entities, function (value, key) { 
+                if (value.deleted_at) {
+                    value.switch_value = 'Inactive';
+                } else {
+                    value.switch_value = 'Active';
+                }
+                //$scope.names.push(value.name); 
+            });
         });
 
         $scope.SelectFile = function(e) {
@@ -145,7 +158,27 @@ app.component('entityTypeForm', {
             };
             reader.readAsDataURL(e.target.files[0]);
         };
+        $scope.removeEntity = function(index,entity_id){
+            self.removed_entity_ids.push(entity_id);
+            self.entities.splice(index, 1); 
+        }
 
+        $scope.addEntity = function(){
+            self.entities.push({
+                switch_value: 'Active',
+            });
+        }
+        $('.btn-nxt').on("click", function() {
+            $('.editDetails-tabs li.active').next().children('a').trigger("click");
+            tabPaneFooter();
+        });
+        $('.btn-prev').on("click", function() {
+            $('.editDetails-tabs li.active').prev().children('a').trigger("click");
+            tabPaneFooter();
+        });
+        $('.btn-pills').on("click", function() {
+            tabPaneFooter();
+        });
         var form_id = '#form';
         var v = jQuery(form_id).validate({
             ignore: '',

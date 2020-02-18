@@ -15,16 +15,31 @@ app.component('entityList', {
             self.entity_type = response.data.entity_type;
             console.log(response.data.entity_type);
             $('.dataTables_length select').select2();
-        $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
-        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
-        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
-        $('.add_new_button').html(
-            '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
-            'Add ' + self.entity_type.name +
-            '</a>'
-        );
+            $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
+            $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+            $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
+            $('.add_new_button').html(
+                '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
+                'Add ' + self.entity_type.name +
+                '</a>'
+            );
+
+            $('.btn-add-close').on("click", function() {
+                $('#entities_list').DataTable().search('').draw();
+            });
+
+            $('.btn-refresh').on("click", function() {
+                $('#entities_list').DataTable().ajax.reload();
+            });
+
+            app.filter('removeString', function () {
+                return function (text) {
+                    var str = text.replace('s', '');
+                    return str;
+                };
+            });
         });
-        
+
         var dataTable = $('#entities_list').DataTable({
             "dom": dom_structure,
             "language": {
@@ -62,17 +77,6 @@ app.component('entityList', {
                 $('.search label input').focus();
             },
         });
-
-        
-
-        $('.btn-add-close').on("click", function() {
-            $('#entities_list').DataTable().search('').draw();
-        });
-
-        $('.btn-refresh').on("click", function() {
-            $('#entities_list').DataTable().ajax.reload();
-        });
-
         //DELETE
         $scope.deleteEntity = function($id) {
             $('#entity_id').val($id);

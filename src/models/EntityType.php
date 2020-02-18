@@ -12,12 +12,15 @@ class EntityType extends Model {
 	use SeederTrait;
 	use SoftDeletes;
 	protected $table = 'entity_types';
-	public $timestamps = true;
+	public $timestamps = false;
 	protected $fillable = [
 		'name',
 		'entity_type_id',
 	];
 
+	public function entities(){
+		return $this->hasMany('Abs\EntityPkg\Entity')->withTrashed();
+	}
 	public static function createFromObject($record_data) {
 
 		$errors = [];

@@ -16,7 +16,7 @@
                             <h1 class="title">{{$ctrl.action}} Entity Type</h1>
                             <p class="subtitle">
                                 <a href="#!/entity-pkg/entity-type/list">
-                                    Entity Types
+                                    Entity Type
                                 </a> /
                                 {{$ctrl.action}}
                             </p>
@@ -40,7 +40,11 @@
                                         <div class="isotope-filters animated" data-animation="fadeInLeft" data-animation-delay="300">
                                             <ul class="nav nav-pills editDetails-tabs">
                                                 <li class="active">
-                                                    <a data-target="#general-info" role="tab" data-toggle="tab" aria-expanded="true"> General Information
+                                                    <a data-target="#general-info" role="tab" data-toggle="tab" aria-expanded="true"> Entity Type
+                                                    </a>
+                                                </li>
+                                                <li class="">
+                                                    <a data-target="#entity" role="tab" data-toggle="tab" aria-expanded="true"> Entity
                                                     </a>
                                                 </li>
                                             </ul>
@@ -56,7 +60,7 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label>
-                                                                Name
+                                                                Entity Type Name
                                                                 <span class="mandatory">
                                                                     *
                                                                 </span>
@@ -64,7 +68,7 @@
                                                             <input type="text" name="name" ng-model='$ctrl.entity_type.name' class="form-control required" placeholder="Enter Name" autocomplete="off" minlength="3" maxlength="191">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <!-- <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label>
                                                                 Active Status
@@ -76,20 +80,79 @@
                                                                 {{ $ctrl.switch_value }}
                                                             </md-switch>
                                                             <input type="hidden" name="status" value="{{$ctrl.switch_value}}">
-                                                        </div><!-- Field -->
-                                                    </div><!-- Column -->
+                                                        </div>
+                                                    </div> -->
                                                 </div><!-- Row -->
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="tab-pane-footer text-right">
-                                                            <button type="submit" id="submit" class="btn btn-secondary">
-                                                                Submit
-                                                            </button>
+                                                            <a class="btn btn-grey btn-nxt">Next</a>
+                                                            <button type="submit" class="btn btn-secondary submit">Submit</button>
                                                         </div><!-- Tab Footer -->
                                                     </div>
                                                 </div><!-- Row -->
                                             </div><!-- Tab Pane Wrap -->
                                         </div><!-- Tab Pane -->
+                                        <div class="tab-pane fade" id="entity" data-animation="fadeInUp" data-animation-delay="300">
+                                            <div class="form-page">
+                                                <div class="row">
+                                                    <div class="col-lg-9 col-md-8">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-form">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Entity Name <sup class="mandatory">*</sup></th>
+                                                                        <th>Active Status <sup class="mandatory">*</sup></th>
+                                                                        <th></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr ng-repeat="(index, entity) in $ctrl.entities">
+                                                                        <input type="hidden" ng-model="entity.id" name="entity[{{index}}][id]" value="{{entity.id}}">
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <input type="text" name="entity[{{index}}][name]" ng-model='entity.name' class="form-control type-sm required" placeholder="Enter Entity Name">
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <div class="tab-switch">
+                                                                                    <md-switch ng-model="entity.switch_value" aria-label="Switch {{index}}" ng-true-value="'Inactive'" ng-false-value="'Active'" class="md-warn type-sm">
+                                                                                        {{ entity.switch_value }}
+                                                                                    </md-switch>
+                                                                                </div>
+                                                                                <input type="hidden" name="entity[{{index}}][status]" value="{{entity.switch_value}}">
+                                                                            </div><!-- Field -->
+                                                                        </td>
+                                                                        <td>
+                                                                            <a href="javascript:;" ng-click="removeEntity(index,entity.id)"><img src="./public/img/content/modal/close-circle-active.svg" class="img-fluid" alt="Delete"></a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td colspan="3">
+                                                                            <button type="button" class="btn btn-primary-light btn-square" ng-click="addEntity()">+ Add Sub Group</button>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                            <input type="hidden" name="entity_id" id="entity_id" value="">
+                                                            <input type="hidden" name="removed_entity_ids" model="$ctrl.removed_entity_ids" value="{{$ctrl.removed_entity_ids}}">
+                                                        </div><!-- Table Responsive -->
+                                                    </div><!-- Column -->
+                                                </div><!-- Row -->
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="tab-pane-footer text-right">
+                                                            <a class="btn btn-grey btn-prev">Previous</a>
+                                                            <button type="submit" class="btn btn-secondary submit">Submit</button>
+                                                        </div><!-- Tab Footer -->
+                                                    </div><!-- Column -->
+                                                </div><!-- Row -->
+                                            </div><!-- Tab Pane Wrap -->
+                                        </div><!-- Tabe Pane -->
+                                        
                                     </div><!-- Tab Content -->
                                 </div><!-- Tab Form Body -->
                             </div><!-- Tab Form Wrap -->
