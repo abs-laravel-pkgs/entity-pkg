@@ -6,6 +6,8 @@ Route::group(['namespace' => 'Abs\EntityPkg', 'middleware' => ['web', 'auth'], '
 	Route::get('/entity-type/get-form-data', 'EntityTypeController@getEntityTypeFormData')->name('getEntityTypeFormData');
 	Route::post('/entity-type/save', 'EntityTypeController@saveEntityType')->name('saveEntityType');
 	Route::get('/entity-type/delete', 'EntityTypeController@deleteEntityType')->name('deleteEntityType');
+	Route::get('/entity/get-entity-type-fliter-data/', 'EntityTypeController@getEntityTypeFilterData')->name('getEntityTypeFilterData');
+
 
 	//Entity
 	Route::get('/entities/get-list', 'EntityController@getEntityList')->name('getEntityList');

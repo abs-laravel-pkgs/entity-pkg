@@ -4,6 +4,55 @@ app.component('entityTypeList', {
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
+        self.entity_type_list = self.status_list = [];
+        self.entity_type_data = self.status_data = '';
+        $http({
+            url: laravel_routes['getEntityTypeFilterData'],
+            method: 'GET',
+            params: {
+                'entity_type_id': typeof($routeParams.entity_type_id) == 'undefined' ? null : $routeParams.entity_type_id,
+            }
+        }).then(function(response) {
+            self.entity_type_list = response.data.entity_type_list;
+            self.entity_type_list.unshift({'id' : '','name' :  'Select Entity Type'});
+            self.status_list = [{'id' : '','name' :  'Select Status'},{'id' : 0,'name' :  'Active'},{'id' : 1,'name' :  'Inactive'}];
+            console.log(response.data);
+            console.log(self.status_list);
+            $('.dataTables_length select').select2();
+        $('.page-header-content .display-inline-block .data-table-title').html('Entity Types <span class="badge badge-secondary" id="table_info">0</span>');
+        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
+        $('.add_new_button').html(
+            '<a href="#!/entity-pkg/entity-type/add/" type="button" class="btn btn-secondary" dusk="add-btn">' +
+            'Add Entity Type' +
+            '</a><div class="page-header-content button-block"><button class="btn btn-bordered" data-toggle="modal" data-target="#entity-type-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button></div>'
+        );
+            $('.btn-add-close').on("click", function() {
+                $('#entity_types_list').DataTable().search('').draw();
+            });
+
+            $('.btn-refresh').on("click", function() {
+                $('#entity_types_list').DataTable().ajax.reload();
+            });
+
+            app.filter('removeString', function () {
+                return function (text) {
+                    var str = text.replace('s', '');
+                    return str;
+                };
+            });
+            $scope.entityChange = function(){
+                $('#entity_types_list').DataTable().draw();
+            }
+            $scope.entityStatus = function(){
+                $('#entity_types_list').DataTable().draw();
+            }
+            $scope.reset_filter = function() {
+                self.entity_type_data = self.status_data = '';
+                $('#entity_types_list').DataTable().draw();
+            }
+        });
+
         var dataTable = $('#entity_types_list').DataTable({
             "dom": dom_structure,
             "language": {
@@ -24,7 +73,9 @@ app.component('entityTypeList', {
             ajax: {
                 url: laravel_routes['getEntityTypeList'],
                 data: function(d) {
-                    entity_type_type_id: $routeParams.entity_type_type_id
+                    //d.entity_type_type_id= $routeParams.entity_type_type_id;
+                    d.entity_type_id= self.entity_type_data;
+                    d.status_id= self.status_data;
                 }
             },
             columns: [
@@ -41,15 +92,7 @@ app.component('entityTypeList', {
                 $('.search label input').focus();
             },
         });
-        $('.dataTables_length select').select2();
-        $('.page-header-content .display-inline-block .data-table-title').html('Entity Types <span class="badge badge-secondary" id="table_info">0</span>');
-        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
-        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
-        $('.add_new_button').html(
-            '<a href="#!/entity-pkg/entity-type/add/" type="button" class="btn btn-secondary" dusk="add-btn">' +
-            'Add Entity Type' +
-            '</a>'
-        );
+        
 
         $('.btn-add-close').on("click", function() {
             $('#entity_types_list').DataTable().search('').draw();

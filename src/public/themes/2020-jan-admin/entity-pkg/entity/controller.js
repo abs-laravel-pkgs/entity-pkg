@@ -4,7 +4,8 @@ app.component('entityList', {
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
-
+        self.entity_list = self.status_list = [];
+        self.entity_data = self.status_data = '';
         $http({
             url: laravel_routes['getEntityTypeData'],
             method: 'GET',
@@ -13,7 +14,11 @@ app.component('entityList', {
             }
         }).then(function(response) {
             self.entity_type = response.data.entity_type;
-            console.log(response.data.entity_type);
+            self.entity_list = response.data.entity_list;
+            self.entity_list.unshift({'id' : '','name' :  'Select Entity'});
+            self.status_list = [{'id' : '','name' :  'Select Status'},{'id' : 0,'name' :  'Active'},{'id' : 1,'name' :  'Inactive'}];
+            console.log(response.data);
+            console.log(self.status_list);
             $('.dataTables_length select').select2();
             $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
             $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
@@ -21,7 +26,7 @@ app.component('entityList', {
             $('.add_new_button').html(
                 '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
                 'Add ' + self.entity_type.name +
-                '</a>'
+                '</a><div class="page-header-content button-block"><button class="btn btn-bordered" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button></div>'
             );
 
             $('.btn-add-close').on("click", function() {
@@ -38,6 +43,16 @@ app.component('entityList', {
                     return str;
                 };
             });
+            $scope.entityChange = function(){
+                $('#entities_list').DataTable().draw();
+            }
+            $scope.entityStatus = function(){
+                $('#entities_list').DataTable().draw();
+            }
+            $scope.reset_filter = function() {
+                self.entity_data = self.status_data = '';
+                $('#entities_list').DataTable().draw();
+            }
         });
 
         var dataTable = $('#entities_list').DataTable({
@@ -61,6 +76,8 @@ app.component('entityList', {
                 url: laravel_routes['getEntityList'],
                 data: function(d) {
                     d.entity_type_id = $routeParams.entity_type_id;
+                    d.entity_id = self.entity_data;
+                    d.status_id = self.status_data;
                 }
             },
             columns: [
@@ -113,13 +130,7 @@ app.component('entityList', {
         $('#email').on('keyup', function() {
             dataTables.fnFilter();
         });
-        $scope.reset_filter = function() {
-            $("#entity_name").val('');
-            $("#entity_code").val('');
-            $("#mobile_no").val('');
-            $("#email").val('');
-            dataTables.fnFilter();
-        }*/
+        */
 
         $rootScope.loading = false;
     }

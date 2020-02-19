@@ -36,8 +36,9 @@ class EntityController extends Controller {
 
 	}
 	public function getEntityTypeData(Request $r){
-		//dd('s');
-		$this->data['entity_type'] = $entity_type = DB::table('entity_types')->find($r->entity_type_id);
+		$this->data['entity_type'] = $entity_type = EntityType::/*withTrashed()->*/find($r->entity_type_id);
+		$this->data['entity_list'] =  Entity::withTrashed()->where('entity_type_id',$r->entity_type_id)->get();
+		//$this->data['status_list'] = [['Select Status'],['Active'],['Inactive']];
 		//dd($entity_type);
 		if($entity_type){
 			$this->data['success'] = true;
@@ -56,15 +57,25 @@ class EntityController extends Controller {
 
 			])
 			->where('entities.company_id', $this->company_id)
-			->where('entities.entity_type_id', $r->entity_type_id)
+			->where('entities.entity_type_id', $r->entity_type_id);
 
 		/*->where(function ($query) use ($request) {
 				if (!empty($request->question)) {
 					$query->where('entities.question', 'LIKE', '%' . $request->question . '%');
 				}
 			})*/
-			->orderby('entities.id', 'desc');
-
+			
+			if(isset($r->entity_id)){
+				if($r->entity_id){
+					$entities = $entities->where('entities.id',$r->entity_id);
+				}
+			}
+			if(isset($r->status_id)){
+				if($r->status_id==0 || $r->status_id==1){
+					$entities = $r->status_id ? $entities->whereNotNull('deleted_at') : $entities->whereNull('deleted_at');
+				}
+			}
+			$entities =  $entities->orderby('entities.id', 'desc');
 		return Datatables::of($entities)
 			->rawColumns(['action', 'name'])
 			->addColumn('name', function ($entities) {

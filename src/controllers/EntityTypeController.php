@@ -35,21 +35,36 @@ class EntityTypeController extends Controller {
 
 	}
 
+	public function getEntityTypeFilterData(){
+		$this->data['entity_type_list'] = $entity_type_list = EntityType::/*withTrashed()->*/get();
+		$this->data['success'] = true;
+		return response()->json($this->data);
+	}
+
 	public function getEntityTypeList(Request $r) {
-		$entity_types = EntityType::withTrashed()
-			->select([
+		$entity_types = EntityType::/*withTrashed()
+			->*/select([
 				'entity_types.id',
 				'entity_types.name',
 				//DB::raw('IF(entity_types.deleted_at IS NULL, "Active","Inactive") as status'),
 			])
-			->where('entity_types.company_id', $this->company_id)
+			->where('entity_types.company_id', $this->company_id);
 		/*->where(function ($query) use ($request) {
 				if (!empty($request->question)) {
 					$query->where('entity_types.question', 'LIKE', '%' . $request->question . '%');
 				}
 			})*/
-			->orderby('entity_types.id', 'desc');
-
+			if(isset($r->entity_type_id)){
+				if($r->entity_type_id){
+					$entity_types = $entity_types->where('entity_types.id',$r->entity_type_id);
+				}
+			}
+			/*if(isset($r->status_id)){
+				if($r->status_id==0 || $r->status_id==1){
+					$entity_types = $r->status_id ? $entity_types->whereNotNull('deleted_at') : $entity_types->whereNull('deleted_at');
+				}
+			}*/
+			$entity_types = $entity_types->orderby('entity_types.id', 'desc');
 		return Datatables::of($entity_types)
 			->rawColumns(['action', 'name'])
 			->addColumn('name', function ($entity_type) {

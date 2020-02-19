@@ -9,6 +9,54 @@
     </table><!-- Table -->
 </div>
 <!-- Modal -->
+<div class="modal fade filter" id="entity-filter-modal" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close ripple" data-dismiss="modal" aria-label="Close"><i class="icon ion-md-close"></i></button>
+                <h5 class="modal-title" id="myModalLabel">Entity Filter</h5>
+            </div><!-- Modal Header -->
+            <div class="modal-body">
+                <div class="modal-form">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Entity</label>
+                                <md-select ng-model="$ctrl.entity_data" placeholder="Select Entity" md-on-close="clearSearchFieldType()" data-md-container-class="selectdemoSelectHeader"  ng-change="entityChange()">
+                                    <md-select-header class="demo-select-header">
+                                        <input ng-model="searchFieldType" type="search" placeholder="Search Entity.." class="demo-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
+                                    </md-select-header>
+                                    <md-optgroup>
+                                        <md-option ng-value="entity.id" ng-repeat="entity in $ctrl.entity_list | filter:searchFieldType">{{entity.name}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </div><!-- Field -->
+                        </div><!-- Column -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <md-select ng-model="$ctrl.status_data" placeholder="Select Status" md-on-close="clearSearchFieldType()" data-md-container-class="selectdemoSelectHeader" ng-change="entityStatus()">
+                                    <md-select-header class="demo-select-header">
+                                        <input ng-model="searchFieldType" type="search" placeholder="Search Status.." class="demo-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
+                                    </md-select-header>
+                                    <md-optgroup>
+                                        <md-option ng-value="status.id" ng-repeat="status in $ctrl.status_list | filter:searchFieldType">{{status.name}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </div><!-- Field -->
+                        </div><!-- Column -->
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-6">
+                                <button type="button" class="btn btn-rose" ng-click="reset_filter()">Reset Filter</button>
+                        </div>
+                    </div><!-- Row -->
+                </div><!-- Modal Form -->
+            </div><!-- Modal Body -->
+        </div><!-- Modal Content -->
+    </div><!-- Modal Dialog -->
+</div><!-- Modal -->
 <div class="modal fade down-block" id="entity-delete-modal" tabindex="-1" entity="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" entity="document">
         <div class="modal-content">
