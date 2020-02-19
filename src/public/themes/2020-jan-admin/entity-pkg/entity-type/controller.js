@@ -25,7 +25,7 @@ app.component('entityTypeList', {
         $('.add_new_button').html(
             '<a href="#!/entity-pkg/entity-type/add/" type="button" class="btn btn-secondary" dusk="add-btn">' +
             'Add Entity Type' +
-            '</a><div class="page-header-content button-block"><button class="btn btn-bordered" data-toggle="modal" data-target="#entity-type-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button></div>'
+            '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-type-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
         );
             $('.btn-add-close').on("click", function() {
                 $('#entity_types_list').DataTable().search('').draw();
@@ -87,6 +87,13 @@ app.component('entityTypeList', {
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
+                /*if(data.status=="Active")
+                {
+                  $(row).find('td:eq(1)').addClass('color-success');
+                }else 
+                {
+                  $(row).find('td:eq(1)').addClass('color-error'); 
+                }*/
             },
             initComplete: function() {
                 $('.search label input').focus();

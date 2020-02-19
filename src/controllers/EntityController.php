@@ -79,8 +79,8 @@ class EntityController extends Controller {
 		return Datatables::of($entities)
 			->rawColumns(['action', 'name'])
 			->addColumn('name', function ($entities) {
-				$status = $entities->status == 'Active' ? 'green' : 'red';
-				return '<span class="status-indicator ' . $status . '"></span>' . $entities->name;
+				//$status = $entities->status == 'Active' ? 'green' : 'red';
+				return /*'<span class="status-indicator ' . $status . '"></span>' . */$entities->name;
 			})
 			->addColumn('action', function ($entities) {
 				$img1 = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');

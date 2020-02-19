@@ -26,7 +26,7 @@ app.component('entityList', {
             $('.add_new_button').html(
                 '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
                 'Add ' + self.entity_type.name +
-                '</a><div class="page-header-content button-block"><button class="btn btn-bordered" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button></div>'
+                '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
             );
 
             $('.btn-add-close').on("click", function() {
@@ -82,13 +82,20 @@ app.component('entityList', {
             },
             columns: [
                 { data: 'action', searchable: false, class: 'action' },
-                { data: 'name', name: 'entities.name', searchable: true },
+                { data: 'name', name: 'entities.name', searchable: true},
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total + '/' + max)
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
+                if(data.status=="Active")
+                {
+                  $(row).find('td:eq(1)').addClass('color-success');
+                }else 
+                {
+                  $(row).find('td:eq(1)').addClass('color-error'); 
+                }
             },
             initComplete: function() {
                 $('.search label input').focus();
