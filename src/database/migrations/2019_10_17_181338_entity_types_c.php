@@ -11,13 +11,16 @@ class EntityTypesC extends Migration {
 	 * @return void
 	 */
 	public function up() {
-		Schema::create('entity_types', function (Blueprint $table) {
-			$table->increments('id');
-			$table->unsignedInteger('company_id')->nullable();
-			$table->string('name', 191);
+		if (!Schema::hasTable('entity_types')) {
 
-			$table->unique(["company_id", "name"]);
-		});
+			Schema::create('entity_types', function (Blueprint $table) {
+				$table->increments('id');
+				$table->unsignedInteger('company_id')->nullable();
+				$table->string('name', 191);
+
+				$table->unique(["company_id", "name"]);
+			});
+		}
 	}
 
 	/**
