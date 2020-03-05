@@ -29,7 +29,7 @@
 	        template: '<entity-form></entity-form>',
 	        title: 'Add Entity',
 	    }).
-	    when('/entity-pkg/entity/edit/:id', {
+	    when('/entity-pkg/entity/edit/:entity_type_id/:id', {
 	        template: '<entity-form></entity-form>',
 	        title: 'Edit Entity',
 	    });
@@ -41,6 +41,8 @@
 
     var entity_list_template_url = "{{asset($entity_pkg_prefix.'/public/themes/'.$theme.'/entity-pkg/entity/list.html')}}";
     var entity_form_template_url = "{{asset($entity_pkg_prefix.'/public/themes/'.$theme.'/entity-pkg/entity/form.html')}}";
+    // var entity_get_form_data_url = "{{url('/entity-pkg/entity/get-form-data')}}";
+    //var entity_get_form_data_url = "{{url('/coa-pkg/coa-code/get-form-data/')}}";
 
 </script>
 <script type="text/javascript" src="{{asset($entity_pkg_prefix.'/public/themes/'.$theme.'/entity-pkg/entity-type/controller.js')}}"></script>

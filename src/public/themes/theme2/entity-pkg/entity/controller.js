@@ -1,7 +1,7 @@
 app.config(['$routeProvider', function($routeProvider) {
 
     $routeProvider.
-    when('/entity-pkg/entity/list', {
+    when('/entity-pkg/entity/list/:entity_type_id', {
         template: '<entity-list></entity-list>',
         title: 'Entitys',
     }).
@@ -18,13 +18,15 @@ app.config(['$routeProvider', function($routeProvider) {
 app.component('entityList', {
     templateUrl: entity_list_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
+        console.log($routeParams);
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         var table_scroll;
+        self.entity_type_id = $routeParams.entity_type_id;
         table_scroll = $('.page-main-content').height() - 37;
         var dataTable = $('#entities_list').DataTable({
-            "dom": dom_structure,
+            "dom": cndn_dom_structure,
             "language": {
                 // "search": "",
                 // "searchPlaceholder": "Search",
@@ -57,21 +59,18 @@ app.component('entityList', {
                 type: "GET",
                 dataType: "json",
                 data: function(d) {
-                    d.entity_code = $('#entity_code').val();
+                    d.entity_type_id = $routeParams.entity_type_id;
                     d.entity_name = $('#entity_name').val();
-                    d.mobile_no = $('#mobile_no').val();
-                    d.email = $('#email').val();
+                    d.status_id = self.status_id;
                 },
             },
 
             columns: [
                 { data: 'action', class: 'action', name: 'action', searchable: false },
-                { data: 'code', name: 'entities.code' },
                 { data: 'name', name: 'entities.name' },
-                { data: 'mobile_no', name: 'entities.mobile_no' },
-                { data: 'email', name: 'entities.email' },
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
+                //$('#table_info').html(total)
                 $('#table_info').html(total)
                 $('.foot_info').html('Showing ' + start + ' to ' + end + ' of ' + max + ' entries')
             },
@@ -90,6 +89,7 @@ app.component('entityList', {
         $("#search_entity").keyup(function() {
             dataTables.fnFilter(this.value);
         });
+        self.entity_type_id = $routeParams.entity_type_id;
 
         //DELETE
         $scope.deleteEntity = function($id) {
@@ -98,41 +98,37 @@ app.component('entityList', {
         $scope.deleteConfirm = function() {
             $id = $('#entity_id').val();
             $http.get(
-                entity_delete_data_url + '/' + $id,
+                laravel_routes['deleteEntity'],{
+                    params:{
+                        id: $id,
+                    }
+                }
             ).then(function(response) {
                 if (response.data.success) {
                     $noty = new Noty({
                         type: 'success',
                         layout: 'topRight',
-                        text: 'Entity Deleted Successfully',
+                        text: 'JV Rejection Reason Deleted Successfully',
                     }).show();
                     setTimeout(function() {
                         $noty.close();
                     }, 3000);
+                    $location.path('/entity-pkg/entity/list/'+self.entity_type_id);
                     $('#entities_list').DataTable().ajax.reload(function(json) {});
-                    $location.path('/entity-pkg/entity/list');
                 }
             });
         }
 
-        //FOR FILTER
-        $('#entity_code').on('keyup', function() {
-            dataTables.fnFilter();
-        });
         $('#entity_name').on('keyup', function() {
             dataTables.fnFilter();
         });
-        $('#mobile_no').on('keyup', function() {
+        $scope.statusChange=function(){
             dataTables.fnFilter();
-        });
-        $('#email').on('keyup', function() {
-            dataTables.fnFilter();
-        });
+        }
+        
         $scope.reset_filter = function() {
             $("#entity_name").val('');
-            $("#entity_code").val('');
-            $("#mobile_no").val('');
-            $("#email").val('');
+            self.status_id ='';
             dataTables.fnFilter();
         }
 
@@ -144,22 +140,28 @@ app.component('entityList', {
 app.component('entityForm', {
     templateUrl: entity_form_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope) {
-        get_form_data_url = typeof($routeParams.id) == 'undefined' ? entity_get_form_data_url : entity_get_form_data_url + '/' + $routeParams.id;
+        // console.log(entity_get_form_data_url);
+        // get_form_data_url = typeof($routeParams.id) == 'undefined' ? entity_get_form_data_url : entity_get_form_data_url + '/' + $routeParams.id;
+        // console.log(get_form_data_url);
         var self = this;
+        console.log($routeParams.id);
+        self.entity_type_id = $routeParams.entity_type_id;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
         $http.get(
-            get_form_data_url
+            laravel_routes['getEntityFormData'],{
+                params:{
+                    id: typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
+                    entity_type_id: $routeParams.entity_type_id,
+                }
+            }
         ).then(function(response) {
-            // console.log(response);
             self.entity = response.data.entity;
-            self.address = response.data.address;
-            self.country_list = response.data.country_list;
+            self.attachment = response.data.address;
+            self.entity_type_id = self.entity_type_id;
             self.action = response.data.action;
             $rootScope.loading = false;
             if (self.action == 'Edit') {
-                $scope.onSelectedCountry(self.address.country_id);
-                $scope.onSelectedState(self.address.state_id);
                 if (self.entity.deleted_at) {
                     self.switch_value = 'Inactive';
                 } else {
@@ -167,8 +169,8 @@ app.component('entityForm', {
                 }
             } else {
                 self.switch_value = 'Active';
-                self.state_list = [{ 'id': '', 'name': 'Select State' }];
-                self.city_list = [{ 'id': '', 'name': 'Select City' }];
+               /* self.state_list = [{ 'id': '', 'name': 'Select State' }];
+                self.city_list = [{ 'id': '', 'name': 'Select City' }];*/
             }
         });
 
@@ -187,99 +189,23 @@ app.component('entityForm', {
         $scope.btnNxt = function() {}
         $scope.prev = function() {}
 
-        //SELECT STATE BASED COUNTRY
-        $scope.onSelectedCountry = function(id) {
-            entity_get_state_by_country = vendor_get_state_by_country;
-            $http.post(
-                entity_get_state_by_country, { 'country_id': id }
-            ).then(function(response) {
-                // console.log(response);
-                self.state_list = response.data.state_list;
-            });
-        }
+        /*$scope.saveFormData =  function(){
 
-        //SELECT CITY BASED STATE
-        $scope.onSelectedState = function(id) {
-            entity_get_city_by_state = vendor_get_city_by_state
-            $http.post(
-                entity_get_city_by_state, { 'state_id': id }
-            ).then(function(response) {
-                // console.log(response);
-                self.city_list = response.data.city_list;
-            });
-        }
-
-        var form_id = '#form';
+        }*/
+        var form_id = '#entity_form';
         var v = jQuery(form_id).validate({
             ignore: '',
             rules: {
-                'code': {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 255,
-                },
                 'name': {
                     required: true,
                     minlength: 3,
                     maxlength: 255,
                 },
-                'cust_group': {
-                    maxlength: 100,
-                },
-                'gst_number': {
-                    required: true,
-                    maxlength: 100,
-                },
-                'dimension': {
-                    maxlength: 50,
-                },
-                'address': {
-                    required: true,
-                    minlength: 5,
-                    maxlength: 250,
-                },
-                'address_line1': {
-                    minlength: 3,
-                    maxlength: 255,
-                },
-                'address_line2': {
-                    minlength: 3,
-                    maxlength: 255,
-                },
-                // 'pincode': {
-                //     required: true,
-                //     minlength: 6,
-                //     maxlength: 6,
-                // },
             },
             messages: {
-                'code': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
                 'name': {
                     maxlength: 'Maximum of 255 charaters',
                 },
-                'cust_group': {
-                    maxlength: 'Maximum of 100 charaters',
-                },
-                'dimension': {
-                    maxlength: 'Maximum of 50 charaters',
-                },
-                'gst_number': {
-                    maxlength: 'Maximum of 25 charaters',
-                },
-                'email': {
-                    maxlength: 'Maximum of 100 charaters',
-                },
-                'address_line1': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-                'address_line2': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-                // 'pincode': {
-                //     maxlength: 'Maximum of 6 charaters',
-                // },
             },
             invalidHandler: function(event, validator) {
                 $noty = new Noty({
@@ -311,7 +237,7 @@ app.component('entityForm', {
                             setTimeout(function() {
                                 $noty.close();
                             }, 3000);
-                            $location.path('/entity-pkg/entity/list');
+                            $location.path('/entity-pkg/entity/list/'+self.entity_type_id);
                             $scope.$apply();
                         } else {
                             if (!res.success == true) {
@@ -330,7 +256,7 @@ app.component('entityForm', {
                                 }, 3000);
                             } else {
                                 $('#submit').button('reset');
-                                $location.path('/entity-pkg/entity/list');
+                                $location.path('/entity-pkg/entity/list/'+self.entity_type_id);
                                 $scope.$apply();
                             }
                         }
