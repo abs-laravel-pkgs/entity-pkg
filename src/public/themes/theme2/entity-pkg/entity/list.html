@@ -4,9 +4,11 @@
             <div class="page-header-content-left">
                 <div class="page-header-content title-block">
                     <h1 class="title type-2 search_entity">JV Rejection Reasons (<span  id="table_info">4</span>)</h1>
+                    <p class="subtitle">Masters / JV Masters / JV Rejection Reason Master</p>
+
                 </div><!-- Page Header Content -->
                 <div class="page-header-content button-block">
-                    <button class="btn btn-bordered" data-toggle="modal" data-target="#entity-filter"><i class="icon ion-md-funnel"></i>Filter</button>
+                    <button class="btn btn-bordered my-tooltip" data-toggle="modal" ng-shortcut="'meta+shift+f'" ng-shortcut-click data-title="ctrl+shift+f" data-target="#entity-filter"><i class="icon ion-md-funnel"></i>Filter</button>
                 </div><!-- Page Header Content -->
             </div><!-- Page Header Content Left -->
             <div class="page-header-content-right">
@@ -27,12 +29,12 @@
                     <div class="search_filter">
                         <label>
                             <input type="search" id="search_entity" class="form-control" placeholder="Search"/>
-                            <button class="btn-clear" id="clear_search"  ng-click="clear_search()">Clear</button>
+                            <button class="btn-clear" id="clear_search"  ng-click="clear_search()" ng-shortcut="'meta+shift+c'" ng-shortcut-click data-title="ctrl+shift+c">Clear</button>
                         </label>
                     </div><!-- Search Filter -->
                 </div><!-- Page Header Content -->
                 <div class="page-header-content button-block">
-                    <a href="#!/entity-pkg/entity/add/{{$ctrl.entity_type_id}}" class="btn btn-primary">Add New</a>
+                    <a href="#!/entity-pkg/entity/add/{{$ctrl.entity_type_id}}" class="btn btn-primary" ng-shortcut="'meta+shift+n'" ng-shortcut-click data-title="ctrl+shift+n">Add New</a>
                 </div><!-- Page Header Content -->
             </div><!-- Page Header Content Right -->
         </div><!-- Page Header Inner -->
@@ -44,7 +46,7 @@
                     <table class="table" id="entities_list" style="width: 100% !important;">
                         <thead>
                             <tr>
-                                <th class="action">Action</th>
+                                <th class="action">Actions</th>
                                 <th>JV Rejection Reason</th>
                             </tr>
                         </thead>
@@ -74,11 +76,11 @@
                                 <input class="form-control" placeholder="Enter Rejection Reason" autocomplete="off" id="entity_name" />
                             </div><!-- Field -->
                         </div><!-- Column -->
-                        
+
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Status</label>
-                                <select class="form-control show-as" ng-change="statusChange()" ng-model="$ctrl.status_id">
+                                <select class="form-control show-as" id="status_id" ng-change="statusChange()" ng-model="$ctrl.status_id">
                                     <option value="">Select Status</option>
                                     <option value="1">Active</option>
                                     <option value="2">Inactive</option>
@@ -91,7 +93,7 @@
             </div><!-- Modal Body -->
             <div class="modal-footer">
                 <div class="text-right">
-                    <button type="button" class="btn btn-primary" ng-click="reset_filter()">Reset</button>
+                    <button type="button" class="btn btn-primary" ng-click="reset_filter()" ng-shortcut="'meta+shift+t'" ng-shortcut-click data-title="ctrl+shift+t">Reset</button>
                 </div>
             </div><!-- Modal Footer -->
         </div><!-- Modal Content -->
@@ -112,8 +114,8 @@
             </div><!-- Modal Body -->
             <div class="modal-footer">
                 <input type="hidden" name="entity_id" id="entity_id" value="">
-                <button type="button" class="btn btn-red" data-dismiss="modal">No</button>
-                <button type="button" id="accept" ng-click="deleteConfirm()" data-dismiss="modal" class="btn btn-red">Yes</button>
+                <button type="button" class="btn btn-red" data-dismiss="modal" style="color:white;">No</button>
+                <button type="button" id="accept" ng-click="deleteConfirm()" data-dismiss="modal" style="color:white;" class="btn btn-red">Yes</button>
             </div><!-- Modal Footer -->
         </div><!-- Modal Content -->
     </div><!-- Modal Dialog -->

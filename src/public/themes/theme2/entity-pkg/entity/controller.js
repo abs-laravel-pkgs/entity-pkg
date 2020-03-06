@@ -3,26 +3,32 @@ app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.
     when('/entity-pkg/entity/list/:entity_type_id', {
         template: '<entity-list></entity-list>',
-        title: 'Entitys',
+        title: 'Rejection Reasons',
     }).
     when('/entity-pkg/entity/add', {
         template: '<entity-form></entity-form>',
-        title: 'Add Entity',
+        title: 'Add Rejection Reason',
     }).
     when('/entity-pkg/entity/edit/:id', {
         template: '<entity-form></entity-form>',
-        title: 'Edit Entity',
+        title: 'Edit Rejection Reason',
     });
 }]);
 
 app.component('entityList', {
     templateUrl: entity_list_template_url,
-    controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
+    controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location,$cookies) {
         console.log($routeParams);
         $scope.loading = true;
+        $('#search_entity').focus();
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         var table_scroll;
+        var entity_name = $cookies.get('entity_name');
+        $('#entity_name').val(entity_name);
+        self.status_id = $cookies.get('status');
+        $('#status_id').val(self.status_id);
+        $('#search_entity').val($cookies.get('search_entity'));
         self.entity_type_id = $routeParams.entity_type_id;
         table_scroll = $('.page-main-content').height() - 37;
         var dataTable = $('#entities_list').DataTable({
@@ -49,9 +55,13 @@ app.component('entityList', {
                 return JSON.parse(localStorage.getItem('CDataTables_' + settings.sInstance));
             },
             serverSide: true,
+           // aaSorting: [[ 1, "asc" ]],
+           columnDefs: [
+                  { "targets": [1], "orderable": true }
+              ],
             paging: true,
             stateSave: true,
-            ordering: false,
+            //ordering: false,
             scrollY: table_scroll + "px",
             scrollCollapse: true,
             ajax: {
@@ -79,14 +89,25 @@ app.component('entityList', {
             }
         });
         $('.dataTables_length select').select2();
-
+        $('.show-as').select2();
+            $('.modal-select').select2();
+            $('.multi-select').multiselect({
+                enableClickableOptGroups: true,
+                enableCollapsibleOptGroups: true,
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                includeSelectAllOption: true
+            });
         $scope.clear_search = function() {
             $('#search_entity').val('');
+            $cookies.put('search_entity',$('#search_entity').val());
+            
             $('#entities_list').DataTable().search('').draw();
         }
 
         var dataTables = $('#entities_list').dataTable();
         $("#search_entity").keyup(function() {
+            $cookies.put('search_entity',$('#search_entity').val());
             dataTables.fnFilter(this.value);
         });
         self.entity_type_id = $routeParams.entity_type_id;
@@ -120,14 +141,20 @@ app.component('entityList', {
         }
 
         $('#entity_name').on('keyup', function() {
+            entity_name = $('#entity_name').val();
+            $cookies.put('entity_name', entity_name);
             dataTables.fnFilter();
         });
         $scope.statusChange=function(){
+            $cookies.put('status', self.status_id);
             dataTables.fnFilter();
         }
         
         $scope.reset_filter = function() {
             $("#entity_name").val('');
+            $("select#status_id").val('');
+            $cookies.put('status', '');
+            $cookies.put('entity_name','');
             self.status_id ='';
             dataTables.fnFilter();
         }
@@ -144,6 +171,7 @@ app.component('entityForm', {
         // get_form_data_url = typeof($routeParams.id) == 'undefined' ? entity_get_form_data_url : entity_get_form_data_url + '/' + $routeParams.id;
         // console.log(get_form_data_url);
         var self = this;
+        $('#name').focus();
         console.log($routeParams.id);
         self.entity_type_id = $routeParams.entity_type_id;
         self.hasPermission = HelperService.hasPermission;
@@ -173,6 +201,17 @@ app.component('entityForm', {
                 self.city_list = [{ 'id': '', 'name': 'Select City' }];*/
             }
         });
+
+        /*var handleKeyDown = function(event) {
+            console.log(event.keyCode);
+            switch (event.keyCode) {
+                case 27: // [Esc]
+                    $scope.closeLandingPagePopUp();
+                    break;
+            }
+            $scope.$apply();
+        };
+        angular.element(document).on('keydown', handleKeyDown);*/
 
         /* Tab Funtion */
         $('.btn-nxt').on("click", function() {

@@ -5,11 +5,11 @@
         <div class="page-header-inner">
             <div class="page-header-content-left">
                 <div class="page-header-content button-block">
-                    <a href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" type="button" class="btn-back btn-img"><img class="img-responsive" src="./public/theme/img/content/previous.svg" alt="Back" /></a>
+                    <a href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" type="button" class="btn-back btn-img"><img class="img-responsive" src="./public/theme/img/content/previous.svg" alt="Back" ng-shortcut="'meta+shift+left'" ng-shortcut-click data-title="ctrl+shift+left"/></a>
                 </div><!-- Page Header Content -->
                 <div class="page-header-content title-block">
                     <h1 class="title"><b>{{$ctrl.action}} JV Rejection Reason</b></h1>
-                    <p class="subtitle">Journals / JV Rejection Reason / {{$ctrl.action}}  </p>
+                    <p class="subtitle">Masters / JV Masters / <a href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}">JV Rejection Reason</a> / {{$ctrl.action}}</p>
                 </div><!-- Page Header Content -->
             </div><!-- Page Header Content Left -->
         </div><!-- Page Header Inner -->
@@ -39,7 +39,7 @@
                                     <div class="col-md-3">
                                         <div class="input-text form-group">
                                             <label>Name <sup class="mandatory">*</sup></label>
-                                            <input class="form-control" placeholder="Enter Entity Name" autocomplete="off" ng-model="$ctrl.entity.name" name="name"/>
+                                            <input class="form-control" placeholder="Enter Entity Name" autocomplete="off" ng-model="$ctrl.entity.name" id="name" name="name"/>
                                             <input type="hidden" class="form-control"autocomplete="off" ng-model="$ctrl.entity.id" name="id" value="{{$ctrl.entity.id}}"/>
                                             <input type="hidden" class="form-control"autocomplete="off" ng-model="$ctrl.entity.entity_type_id" name="entity_type_id" value="{{$ctrl.entity_type_id}}"/>
                                         </div><!-- Feild -->
@@ -59,8 +59,8 @@
                                     <div class="tab-pane-footer">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <a class="btn btn-cancel" href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}">Cancel</a>
-                                                <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+                                                <a class="btn btn-cancel" href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" ng-shortcut="'meta+shift+left'" ng-shortcut-click data-title="ctrl+shift+left">Cancel</a>
+                                                <button type="submit" class="btn btn-primary" id="submit" ng-shortcut="'meta+shift+s'" ng-shortcut-click data-title="ctrl+shift+s">Submit</button>
                                             </div>
                                         </div>
                                     </div><!-- Tab Footer -->

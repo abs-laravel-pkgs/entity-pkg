@@ -23,15 +23,15 @@
 
 	    when('/entity-pkg/entity/list/:entity_type_id', {
 	        template: '<entity-list></entity-list>',
-	        title: 'Entity List',
+	        title: 'Rejection Reason',
 	    }).
 	    when('/entity-pkg/entity/add/:entity_type_id', {
 	        template: '<entity-form></entity-form>',
-	        title: 'Add Entity',
+	        title: 'Add Rejection Reason',
 	    }).
 	    when('/entity-pkg/entity/edit/:entity_type_id/:id', {
 	        template: '<entity-form></entity-form>',
-	        title: 'Edit Entity',
+	        title: 'Edit Rejection Reason',
 	    });
 
 	}]);
