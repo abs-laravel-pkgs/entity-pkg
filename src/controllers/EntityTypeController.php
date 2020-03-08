@@ -1,7 +1,7 @@
 <?php
 
 namespace Abs\EntityPkg;
-use Abs\Basic\Attachment;
+use Abs\BasicPkg\Attachment;
 use Abs\EntityPkg\EntityType;
 use App\Http\Controllers\Controller;
 use Auth;
