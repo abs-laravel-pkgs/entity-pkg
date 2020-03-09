@@ -17,18 +17,14 @@ app.config(['$routeProvider', function($routeProvider) {
 
 app.component('entityList', {
     templateUrl: entity_list_template_url,
-    controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location,$cookies) {
+    controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location, $element) {
         console.log($routeParams);
         $scope.loading = true;
         $('#search_entity').focus();
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         var table_scroll;
-        var entity_name = $cookies.get('entity_name');
-        $('#entity_name').val(entity_name);
-        self.status_id = $cookies.get('status');
-        $('#status_id').val(self.status_id);
-        $('#search_entity').val($cookies.get('search_entity'));
+
         self.entity_type_id = $routeParams.entity_type_id;
         table_scroll = $('.page-main-content').height() - 37;
         var dataTable = $('#entities_list').DataTable({
@@ -55,23 +51,19 @@ app.component('entityList', {
                 return JSON.parse(localStorage.getItem('CDataTables_' + settings.sInstance));
             },
             serverSide: true,
-           // aaSorting: [[ 1, "asc" ]],
-           columnDefs: [
-                  { "targets": [1], "orderable": true }
-              ],
             paging: true,
             stateSave: true,
             //ordering: false,
             scrollY: table_scroll + "px",
             scrollCollapse: true,
             ajax: {
-                url: url(laravel_routes['getEntityList']),
+                url: laravel_routes['getEntityList'],
                 type: "GET",
                 dataType: "json",
                 data: function(d) {
                     d.entity_type_id = $routeParams.entity_type_id;
                     d.entity_name = $('#entity_name').val();
-                    d.status_id = self.status_id;
+                    d.status_id = $('#status').val();
                 },
             },
 
@@ -89,28 +81,16 @@ app.component('entityList', {
             }
         });
         $('.dataTables_length select').select2();
-        $('.show-as').select2();
-            $('.modal-select').select2();
-            $('.multi-select').multiselect({
-                enableClickableOptGroups: true,
-                enableCollapsibleOptGroups: true,
-                enableFiltering: true,
-                enableCaseInsensitiveFiltering: true,
-                includeSelectAllOption: true
-            });
+
         $scope.clear_search = function() {
             $('#search_entity').val('');
-            $cookies.put('search_entity',$('#search_entity').val());
-            
             $('#entities_list').DataTable().search('').draw();
         }
 
         var dataTables = $('#entities_list').dataTable();
         $("#search_entity").keyup(function() {
-            $cookies.put('search_entity',$('#search_entity').val());
             dataTables.fnFilter(this.value);
         });
-        self.entity_type_id = $routeParams.entity_type_id;
 
         //DELETE
         $scope.deleteEntity = function($id) {
@@ -119,43 +99,50 @@ app.component('entityList', {
         $scope.deleteConfirm = function() {
             $id = $('#entity_id').val();
             $http.get(
-                laravel_routes['deleteEntity'],{
-                    params:{
+                laravel_routes['deleteEntity'], {
+                    params: {
                         id: $id,
                     }
                 }
             ).then(function(response) {
                 if (response.data.success) {
-                    $noty = new Noty({
-                        type: 'success',
-                        layout: 'topRight',
-                        text: 'JV Rejection Reason Deleted Successfully',
-                    }).show();
-                    setTimeout(function() {
-                        $noty.close();
-                    }, 3000);
-                    $location.path('/entity-pkg/entity/list/'+self.entity_type_id);
+                    custom_noty('success', 'JV Rejection Reason Deleted Successfully');
+                    $location.path('/entity-pkg/entity/list/' + self.entity_type_id);
                     $('#entities_list').DataTable().ajax.reload(function(json) {});
                 }
             });
         }
 
+        //FOR FILTER
+        self.status = [
+            { id: '', name: 'Select Status' },
+            { id: '1', name: 'Active' },
+            { id: '0', name: 'Inactive' },
+        ];
+        $element.find('input').on('keydown', function(ev) {
+            ev.stopPropagation();
+        });
+        $scope.clearSearchTerm = function() {
+            $scope.searchTerm = '';
+        };
+        /* Modal Md Select Hide */
+        $('.modal').bind('click', function(event) {
+            if ($('.md-select-menu-container').hasClass('md-active')) {
+                $mdSelect.hide();
+            }
+        });
+
         $('#entity_name').on('keyup', function() {
-            entity_name = $('#entity_name').val();
-            $cookies.put('entity_name', entity_name);
             dataTables.fnFilter();
         });
-        $scope.statusChange=function(){
-            $cookies.put('status', self.status_id);
+        $scope.onSelectedStatus = function(val) {
+            $("#status").val(val);
             dataTables.fnFilter();
         }
-        
+
         $scope.reset_filter = function() {
             $("#entity_name").val('');
-            $("select#status_id").val('');
-            $cookies.put('status', '');
-            $cookies.put('entity_name','');
-            self.status_id ='';
+            $("#status").val('');
             dataTables.fnFilter();
         }
 
@@ -177,16 +164,14 @@ app.component('entityForm', {
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
         $http.get(
-            laravel_routes['getEntityFormData'],{
-                params:{
+            laravel_routes['getEntityFormData'], {
+                params: {
                     id: typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
                     entity_type_id: $routeParams.entity_type_id,
                 }
             }
         ).then(function(response) {
             self.entity = response.data.entity;
-            self.attachment = response.data.address;
-            self.entity_type_id = self.entity_type_id;
             self.action = response.data.action;
             $rootScope.loading = false;
             if (self.action == 'Edit') {
@@ -197,22 +182,8 @@ app.component('entityForm', {
                 }
             } else {
                 self.switch_value = 'Active';
-               /* self.state_list = [{ 'id': '', 'name': 'Select State' }];
-                self.city_list = [{ 'id': '', 'name': 'Select City' }];*/
             }
         });
-
-        /*var handleKeyDown = function(event) {
-            console.log(event.keyCode);
-            switch (event.keyCode) {
-                case 27: // [Esc]
-                    $scope.closeLandingPagePopUp();
-                    break;
-            }
-            $scope.$apply();
-        };
-        angular.element(document).on('keydown', handleKeyDown);*/
-
         /* Tab Funtion */
         $('.btn-nxt').on("click", function() {
             $('.cndn-tabs li.active').next().children('a').trigger("click");
@@ -238,23 +209,8 @@ app.component('entityForm', {
                 'name': {
                     required: true,
                     minlength: 3,
-                    maxlength: 255,
+                    maxlength: 191,
                 },
-            },
-            messages: {
-                'name': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-            },
-            invalidHandler: function(event, validator) {
-                $noty = new Noty({
-                    type: 'error',
-                    layout: 'topRight',
-                    text: 'You have errors,Please check all tabs'
-                }).show();
-                setTimeout(function() {
-                    $noty.close();
-                }, 3000)
             },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
@@ -268,15 +224,8 @@ app.component('entityForm', {
                     })
                     .done(function(res) {
                         if (res.success == true) {
-                            $noty = new Noty({
-                                type: 'success',
-                                layout: 'topRight',
-                                text: res.message,
-                            }).show();
-                            setTimeout(function() {
-                                $noty.close();
-                            }, 3000);
-                            $location.path('/entity-pkg/entity/list/'+self.entity_type_id);
+                            custom_noty('success', res.message);
+                            $location.path('/entity-pkg/entity/list/' + self.entity_type_id);
                             $scope.$apply();
                         } else {
                             if (!res.success == true) {
@@ -285,31 +234,17 @@ app.component('entityForm', {
                                 for (var i in res.errors) {
                                     errors += '<li>' + res.errors[i] + '</li>';
                                 }
-                                $noty = new Noty({
-                                    type: 'error',
-                                    layout: 'topRight',
-                                    text: errors
-                                }).show();
-                                setTimeout(function() {
-                                    $noty.close();
-                                }, 3000);
+                                custom_noty('error', errors);
                             } else {
                                 $('#submit').button('reset');
-                                $location.path('/entity-pkg/entity/list/'+self.entity_type_id);
+                                $location.path('/entity-pkg/entity/list/' + self.entity_type_id);
                                 $scope.$apply();
                             }
                         }
                     })
                     .fail(function(xhr) {
                         $('#submit').button('reset');
-                        $noty = new Noty({
-                            type: 'error',
-                            layout: 'topRight',
-                            text: 'Something went wrong at server',
-                        }).show();
-                        setTimeout(function() {
-                            $noty.close();
-                        }, 3000);
+                        custom_noty('error', 'Something went wrong at server');
                     });
             }
         });

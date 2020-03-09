@@ -3,9 +3,8 @@
         <div class="page-header-inner">
             <div class="page-header-content-left">
                 <div class="page-header-content title-block">
-                    <h1 class="title type-2 search_entity">JV Rejection Reasons (<span  id="table_info">4</span>)</h1>
+                    <h1 class="title type-2 search_entity">JV Rejection Reasons (<span id="table_info">4</span>)</h1>
                     <p class="subtitle">Masters / JV Masters / JV Rejection Reason Master</p>
-
                 </div><!-- Page Header Content -->
                 <div class="page-header-content button-block">
                     <button class="btn btn-bordered my-tooltip" data-toggle="modal" ng-shortcut="'meta+shift+f'" ng-shortcut-click data-title="ctrl+shift+f" data-target="#entity-filter"><i class="icon ion-md-funnel"></i>Filter</button>
@@ -20,21 +19,21 @@
                 </div><!-- Page Header Content -->
                 <div class="page-header-content reset-block">
                     <div class="reset-wrap">
-                        <button class="btn-reset reset-tooltip">
-                            <img class="img-responsive" src="./public/theme/img/content/reset.svg" ng-click="statusChange()"alt="Reset" />
+                        <button class="btn-reset reset-tooltip my-tooltip" ng-shortcut="'meta+shift+r'" ng-shortcut-click data-title="ctrl+shift+r">
+                            <img class="img-responsive" src="./public/theme/img/content/reset.svg" ng-click="statusChange()" alt="Reset" />
                         </button>
                     </div>
                 </div><!-- Page Header Content -->
                 <div class="page-header-content search-block">
                     <div class="search_filter">
                         <label>
-                            <input type="search" id="search_entity" class="form-control" placeholder="Search"/>
-                            <button class="btn-clear" id="clear_search"  ng-click="clear_search()" ng-shortcut="'meta+shift+c'" ng-shortcut-click data-title="ctrl+shift+c">Clear</button>
+                            <input type="search" id="search_entity" class="form-control" placeholder="Search" />
+                            <button class="btn-clear my-tooltip" id="clear_search" ng-click="clear_search()" ng-shortcut="'meta+shift+c'" ng-shortcut-click data-title="ctrl+shift+c">Clear</button>
                         </label>
                     </div><!-- Search Filter -->
                 </div><!-- Page Header Content -->
                 <div class="page-header-content button-block">
-                    <a href="#!/entity-pkg/entity/add/{{$ctrl.entity_type_id}}" class="btn btn-primary" ng-shortcut="'meta+shift+n'" ng-shortcut-click data-title="ctrl+shift+n">Add New</a>
+                    <a href="#!/entity-pkg/entity/add/{{$ctrl.entity_type_id}}" class="btn btn-primary my-tooltip" ng-shortcut="'meta+shift+n'" ng-shortcut-click data-title="ctrl+shift+n">Add New</a>
                 </div><!-- Page Header Content -->
             </div><!-- Page Header Content Right -->
         </div><!-- Page Header Inner -->
@@ -51,7 +50,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
                         </tbody>
                     </table>
                 </div><!-- Column -->
@@ -70,53 +68,50 @@
             <div class="modal-body">
                 <div class="modal-form">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label>Rejection Reason</label>
                                 <input class="form-control" placeholder="Enter Rejection Reason" autocomplete="off" id="entity_name" />
                             </div><!-- Field -->
                         </div><!-- Column -->
-
-                        <div class="col-md-12">
-                            <div class="form-group">
+                        <div class="col-md-6">
+                            <div class="input-text form-group">
                                 <label>Status</label>
-                                <select class="form-control show-as" id="status_id" ng-change="statusChange()" ng-model="$ctrl.status_id">
-                                    <option value="">Select Status</option>
-                                    <option value="1">Active</option>
-                                    <option value="2">Inactive</option>
-                                </select>
+                                <md-select ng-model="$ctrl.entity.status" md-on-close="clearSearchTerm()" data-md-container-class="selectdemoSelectHeader" ng-change="onSelectedStatus($ctrl.entity.status)" placeholder="Select Status">
+                                    <md-select-header class="demo-select-header">
+                                        <input ng-model="searchTerm" type="search" placeholder="Search for a Status" class="demo-header-searchbox md-text">
+                                    </md-select-header>
+                                    <md-optgroup>
+                                        <md-option ng-value="status.id" ng-repeat="status in $ctrl.status | filter:searchTerm">{{status.name}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                                <input type="hidden" class="form-control" name="status" id="status" value="">
                             </div><!-- Field -->
                         </div><!-- Column -->
-                       
                     </div><!-- Row -->
                 </div><!-- Modal Form -->
             </div><!-- Modal Body -->
             <div class="modal-footer">
                 <div class="text-right">
-                    <button type="button" class="btn btn-primary" ng-click="reset_filter()" ng-shortcut="'meta+shift+t'" ng-shortcut-click data-title="ctrl+shift+t">Reset</button>
+                    <button type="button" class="btn btn-primary my-tooltip" ng-click="reset_filter()" ng-shortcut="'meta+shift+t'" ng-shortcut-click data-title="ctrl+shift+t">Reset</button>
                 </div>
             </div><!-- Modal Footer -->
         </div><!-- Modal Content -->
     </div><!-- Modal Dialog -->
 </div><!-- Modal -->
-<div class="modal modal-yellow fade" id="alert-modal-red" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-sm" role="document">
+<div class="modal fade alert-modal failure" id="alert-modal-red" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="ion-close-circled">x</span></button>
-                <h4 class="modal-title" id="myModalLabel">Warning</h4>
-                <div class="modal-icon">
-                    <img class="img-responsive" alt="Icon" src="./public/img/content/icon-warning.png">
-                </div><!-- Modal Icon -->
-            </div><!-- Modal Header -->
+                <h4 class="modal-title" id="myModalLabel">ARE YOU SURE?</h4>
+            </div>
             <div class="modal-body">
-                <h4>Are you sure do you want to delete?</h4>
-            </div><!-- Modal Body -->
-            <div class="modal-footer">
+                <h5>Delete</h5>
+                <p>You can’t retrive the data again, Are you sure you want to delete? </p>
                 <input type="hidden" name="entity_id" id="entity_id" value="">
-                <button type="button" class="btn btn-red" data-dismiss="modal" style="color:white;">No</button>
-                <button type="button" id="accept" ng-click="deleteConfirm()" data-dismiss="modal" style="color:white;" class="btn btn-red">Yes</button>
-            </div><!-- Modal Footer -->
-        </div><!-- Modal Content -->
-    </div><!-- Modal Dialog -->
-</div><!-- Modal Content -->
+                <button class="btn btn-grey" data-dismiss="modal" aria-label="Close">Cancel</button>
+                <button class="btn btn-rose" ng-click="deleteConfirm()" type="button" data-dismiss="modal" aria-label="Close">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>

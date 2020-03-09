@@ -5,7 +5,7 @@
         <div class="page-header-inner">
             <div class="page-header-content-left">
                 <div class="page-header-content button-block">
-                    <a href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" type="button" class="btn-back btn-img"><img class="img-responsive" src="./public/theme/img/content/previous.svg" alt="Back" ng-shortcut="'meta+shift+left'" ng-shortcut-click data-title="ctrl+shift+left"/></a>
+                    <a href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" type="button" class="btn-back btn-img"><img class="img-responsive my-tooltip" src="./public/theme/img/content/previous.svg" alt="Back" ng-shortcut="'meta+shift+left'" ng-shortcut-click data-title="ctrl+shift+left" /></a>
                 </div><!-- Page Header Content -->
                 <div class="page-header-content title-block">
                     <h1 class="title"><b>{{$ctrl.action}} JV Rejection Reason</b></h1>
@@ -14,19 +14,18 @@
             </div><!-- Page Header Content Left -->
         </div><!-- Page Header Inner -->
     </div><!-- Page Header -->
-
     <!-- Page Main Content -->
     <div class="page-main-content form-content type2">
         <div class="page-tab-form pb-70">
             <div class="tab-form-wrap">
                 <div class="tab-form-header">
                     <div class="tab-header">
-                            <!-- Filters -->
+                        <!-- Filters -->
                         <div class="isotope-filters animated" data-animation="fadeInLeft" data-animation-delay="300">
                             <ul class="nav nav-pills cndn-tabs">
                                 <li class="active"><a class="filter active" data-target="#general-info" data-toggle="tab" aria-expanded="true">General Info</a></li>
                             </ul>
-                        </div><!-- Filters -->  
+                        </div><!-- Filters -->
                     </div><!-- Tab Header -->
                 </div><!-- Tab Form Header -->
                 <div class="tab-form-body">
@@ -34,41 +33,40 @@
                         <!-- TAB PANEL -->
                         <div class="tab-pane fade in active" id="general-info" data-animation="fadeInUp" data-animation-delay="300">
                             <form name="entity_form" id="entity_form" novalidate>
-                            <div class="tab-pane-wrap">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="input-text form-group">
-                                            <label>Name <sup class="mandatory">*</sup></label>
-                                            <input class="form-control" placeholder="Enter Entity Name" autocomplete="off" ng-model="$ctrl.entity.name" id="name" name="name"/>
-                                            <input type="hidden" class="form-control"autocomplete="off" ng-model="$ctrl.entity.id" name="id" value="{{$ctrl.entity.id}}"/>
-                                            <input type="hidden" class="form-control"autocomplete="off" ng-model="$ctrl.entity.entity_type_id" name="entity_type_id" value="{{$ctrl.entity_type_id}}"/>
-                                        </div><!-- Feild -->
-                                    </div><!-- Column -->
-                                    <div class="col-md-3">
-                                        <div class="input-text form-group">
-                                            <label>Active Status <sup class="mandatory">*</sup></label>
-                                            <div class="tab-switch">
-                                                <md-switch ng-model="$ctrl.switch_value" aria-label="Switch 1" ng-true-value="'Inactive'" ng-false-value="'Active'" class="md-warn">
-                                                    {{ $ctrl.switch_value }}
-                                                </md-switch>
+                                <div class="tab-pane-wrap">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="input-text form-group">
+                                                <label>Name <sup class="mandatory">*</sup></label>
+                                                <input class="form-control" placeholder="Enter Entity Name" autocomplete="off" ng-model="$ctrl.entity.name" id="name" name="name" />
+                                                <input type="hidden" class="form-control" autocomplete="off" ng-model="$ctrl.entity.id" name="id" value="{{$ctrl.entity.id}}" />
+                                                <input type="hidden" class="form-control" autocomplete="off" ng-model="$ctrl.entity.entity_type_id" name="entity_type_id" value="{{$ctrl.entity_type_id}}" />
+                                            </div><!-- Feild -->
+                                        </div><!-- Column -->
+                                        <div class="col-md-3">
+                                            <div class="input-text form-group">
+                                                <label>Active Status <sup class="mandatory">*</sup></label>
+                                                <div class="tab-switch">
+                                                    <md-switch ng-model="$ctrl.switch_value" aria-label="Switch 1" ng-true-value="'Inactive'" ng-false-value="'Active'" class="md-warn">
+                                                        {{ $ctrl.switch_value }}
+                                                    </md-switch>
+                                                </div>
+                                                <input type="hidden" class="form-control" value="{{$ctrl.switch_value}}" ng-model="$ctrl.switch_value" name="status" />
+                                            </div><!-- Form Group -->
+                                        </div><!-- Column -->
+                                        <div class="tab-pane-footer">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a class="btn btn-cancel my-tooltip" href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" ng-shortcut="'meta+shift+left'" ng-shortcut-click data-title="ctrl+shift+left">Cancel</a>
+                                                    <button type="submit" class="btn btn-primary my-tooltip" id="submit" ng-shortcut="'meta+shift+s'" ng-shortcut-click data-title="ctrl+shift+s">Submit</button>
+                                                </div>
                                             </div>
-                                            <input type="hidden" class="form-control" value="{{$ctrl.switch_value}}" ng-model="$ctrl.switch_value" name="status"/>
-
-                                        </div><!-- Form Group -->
-                                    </div><!-- Column -->
-                                    <div class="tab-pane-footer">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <a class="btn btn-cancel" href="#!/entity-pkg/entity/list/{{$ctrl.entity_type_id}}" ng-shortcut="'meta+shift+left'" ng-shortcut-click data-title="ctrl+shift+left">Cancel</a>
-                                                <button type="submit" class="btn btn-primary" id="submit" ng-shortcut="'meta+shift+s'" ng-shortcut-click data-title="ctrl+shift+s">Submit</button>
-                                            </div>
-                                        </div>
-                                    </div><!-- Tab Footer -->
-                                </div><!-- Row -->
-                            </div><!-- Tab Pane Wrap -->
-                        </form>
-                        </div><!-- Tabe Pane -->                        
-                    </div><!-- Tab Content -->   
+                                        </div><!-- Tab Footer -->
+                                    </div><!-- Row -->
+                                </div><!-- Tab Pane Wrap -->
+                            </form>
+                        </div><!-- Tabe Pane -->
+                    </div><!-- Tab Content -->
                 </div><!-- Tab Form Body -->
             </div><!-- Tab Form Wrap -->
         </div><!-- Page Form -->

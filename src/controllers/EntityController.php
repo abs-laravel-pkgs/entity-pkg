@@ -3,6 +3,7 @@
 namespace Abs\EntityPkg;
 //use Abs\BasicPkg\Attachment;
 use Abs\EntityPkg\Entity;
+use App\ActivityLog;
 use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
@@ -13,10 +14,8 @@ use Yajra\Datatables\Datatables;
 
 class EntityController extends Controller {
 
-	private $company_id;
 	public function __construct() {
 		$this->data['theme'] = config('custom.admin_theme');
-		$this->company_id = config('custom.company_id');
 	}
 
 	public function getEntitys(Request $request) {
@@ -25,7 +24,7 @@ class EntityController extends Controller {
 			'entities.question',
 			'entities.answer',
 		])
-			->where('entities.company_id', $this->company_id)
+			->where('entities.company_id', Auth::user()->company_id)
 			->orderby('entities.display_order', 'asc')
 			->get()
 		;
@@ -36,7 +35,6 @@ class EntityController extends Controller {
 	}
 
 	public function getEntityList(Request $r) {
-		$this->company_id = 1;
 		$entities = Entity::withTrashed()
 			->select([
 				'entities.id as id',
@@ -44,7 +42,7 @@ class EntityController extends Controller {
 				'entities.entity_type_id',
 				DB::raw('IF(entities.deleted_at IS NULL, "Active","Inactive") as status'),
 			])
-			->where('entities.company_id', $this->company_id)
+			->where('entities.company_id', Auth::user()->company_id)
 			->where('entities.entity_type_id', $r->entity_type_id)
 
 			->where(function ($query) use ($r) {
@@ -107,11 +105,15 @@ class EntityController extends Controller {
 		try {
 			$error_messages = [
 				'name.required' => 'Name is Required',
+				'name.min' => 'Minimum 3 Charachers',
+				'name.max' => 'Maximum 3 Charachers',
 				'name.unique' => 'Name is already taken',
 			];
 			$validator = Validator::make($request->all(), [
 				'name' => [
 					'required:true',
+					'min:3',
+					'max:191',
 					'unique:entities,name,' . $request->id . ',id,company_id,' . Auth::user()->company_id . ',entity_type_id,' . $request->entity_type_id,
 				],
 			], $error_messages);
@@ -141,6 +143,17 @@ class EntityController extends Controller {
 			}
 			$entity->save();
 
+			$activity = new ActivityLog;
+			$activity->date_time = Carbon::now();
+			$activity->user_id = Auth::user()->id;
+			$activity->module = 'JV Rejection Reason';
+			$activity->entity_id = $entity->id;
+			$activity->entity_type_id = 21;
+			$activity->activity_id = $request->id == NULL ? 280 : 281;
+			$activity->activity = $request->id == NULL ? 280 : 281;
+			$activity->details = json_encode($activity);
+			$activity->save();
+
 			DB::commit();
 			if (!($request->id)) {
 				return response()->json([
@@ -166,14 +179,23 @@ class EntityController extends Controller {
 		//dd($request->id);
 		DB::beginTransaction();
 		try {
-			$entity = Entity::withTrashed()->where('id', $request->id)->first();
-			if (!is_null($entity->logo_id)) {
-				Attachment::where('company_id', Auth::user()->company_id)->where('attachment_of_id', 20)->where('entity_id', $request->id)->forceDelete();
-			}
-			Entity::withTrashed()->where('id', $request->id)->forceDelete();
+			$entity = Entity::withTrashed()->where('id', $request->id)->forceDelete();
+			if ($entity) {
 
-			DB::commit();
-			return response()->json(['success' => true, 'message' => 'JV Rejection Reason Deleted Successfully']);
+				$activity = new ActivityLog;
+				$activity->date_time = Carbon::now();
+				$activity->user_id = Auth::user()->id;
+				$activity->module = 'JV Rejection Reason';
+				$activity->entity_id = $request->id;
+				$activity->entity_type_id = 21;
+				$activity->activity_id = 282;
+				$activity->activity = 282;
+				$activity->details = json_encode($activity);
+				$activity->save();
+
+				DB::commit();
+				return response()->json(['success' => true, 'message' => 'JV Rejection Reason Deleted Successfully']);
+			}
 		} catch (Exception $e) {
 			DB::rollBack();
 			return response()->json(['success' => false, 'errors' => ['Exception Error' => $e->getMessage()]]);
