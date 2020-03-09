@@ -61,7 +61,8 @@ class EntityController extends Controller {
 					}
 				}
 			})
-			->orderby('entities.id', 'desc');
+		// ->orderby('entities.id', 'desc')
+		;
 
 		return Datatables::of($entities)
 			->rawColumns(['action', 'name'])
