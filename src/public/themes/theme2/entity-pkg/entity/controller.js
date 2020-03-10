@@ -17,14 +17,18 @@ app.config(['$routeProvider', function($routeProvider) {
 
 app.component('entityList', {
     templateUrl: entity_list_template_url,
-    controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location, $element) {
+    controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location, $element, $cookies) {
         console.log($routeParams);
         $scope.loading = true;
         $('#search_entity').focus();
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         var table_scroll;
-
+        var entity_name = $cookies.get('entity_name');
+        $('#entity_name').val(entity_name);
+        self.status = $cookies.get('status');
+        $('#status_id').val(self.status);
+        $('#search_entity').val($cookies.get('search_entity'));
         self.entity_type_id = $routeParams.entity_type_id;
         table_scroll = $('.page-main-content').height() - 37;
         var dataTable = $('#entities_list').DataTable({
@@ -84,11 +88,13 @@ app.component('entityList', {
 
         $scope.clear_search = function() {
             $('#search_entity').val('');
+            $cookies.put('search_entity', $('#search_entity').val());
             $('#entities_list').DataTable().search('').draw();
         }
 
         var dataTables = $('#entities_list').dataTable();
         $("#search_entity").keyup(function() {
+            $cookies.put('search_entity', $('#search_entity').val());
             dataTables.fnFilter(this.value);
         });
 
@@ -133,14 +139,19 @@ app.component('entityList', {
         });
 
         $('#entity_name').on('keyup', function() {
+            $cookies.put('entity_name', entity_name);
             dataTables.fnFilter();
         });
         $scope.onSelectedStatus = function(val) {
             $("#status").val(val);
+            $cookies.put('status', self.status);
             dataTables.fnFilter();
         }
 
         $scope.reset_filter = function() {
+            $("select#status").val('');
+            $cookies.put('status', '');
+            $cookies.put('entity_name', '');
             $("#entity_name").val('');
             $("#status").val('');
             dataTables.fnFilter();
