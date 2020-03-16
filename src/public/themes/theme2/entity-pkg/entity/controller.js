@@ -23,14 +23,14 @@ app.component('entityList', {
         $('#search_entity').focus();
         var self = this;
         self.hasPermission = HelperService.hasPermission;
-        var table_scroll;
         var entity_name = $cookies.get('entity_name');
         $('#entity_name').val(entity_name);
         self.status = $cookies.get('status');
         $('#status_id').val(self.status);
         $('#search_entity').val($cookies.get('search_entity'));
         self.entity_type_id = $routeParams.entity_type_id;
-        table_scroll = $('.page-main-content').height() - 37;
+        var table_scroll;
+        table_scroll = $('.page-main-content.list-page-content').height() - 37;
         var dataTable = $('#entities_list').DataTable({
             "dom": cndn_dom_structure,
             "language": {
