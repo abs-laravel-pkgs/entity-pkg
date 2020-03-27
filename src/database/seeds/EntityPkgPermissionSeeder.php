@@ -17,7 +17,7 @@ class EntityPkgPermissionSeeder extends Seeder {
 				'display_order' => 99,
 				'parent' => null,
 				'name' => 'entities',
-				'display_name' => 'Entitys',
+				'display_name' => 'Entities',
 			],
 			[
 				'display_order' => 1,
@@ -28,7 +28,7 @@ class EntityPkgPermissionSeeder extends Seeder {
 			[
 				'display_order' => 2,
 				'parent' => 'entities',
-				'name' => 'delete-entity',
+				'name' => 'edit-entity',
 				'display_name' => 'Edit',
 			],
 			[

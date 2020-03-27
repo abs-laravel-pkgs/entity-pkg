@@ -23,6 +23,11 @@ app.component('entityList', {
         $('#search_entity').focus();
         var self = this;
         self.hasPermission = HelperService.hasPermission;
+        self.add_permission = self.hasPermission('add-entity');
+        if (!self.hasPermission('entities')) {
+            window.location = "#!/page-permission-denied";
+            return false;
+        }
         var entity_name = $cookies.get('entity_name');
         $('#entity_name').val(entity_name);
         self.status = $cookies.get('status');
@@ -173,6 +178,10 @@ app.component('entityForm', {
         console.log($routeParams.id);
         self.entity_type_id = $routeParams.entity_type_id;
         self.hasPermission = HelperService.hasPermission;
+        if (!self.hasPermission('add-entity') || !self.hasPermission('edit-entity')) {
+            window.location = "#!/page-permission-denied";
+            return false;
+        }
         self.angular_routes = angular_routes;
         $http.get(
             laravel_routes['getEntityFormData'], {
