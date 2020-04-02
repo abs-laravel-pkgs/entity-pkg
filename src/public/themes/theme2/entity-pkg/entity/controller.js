@@ -232,6 +232,12 @@ app.component('entityForm', {
                     maxlength: 191,
                 },
             },
+            messages:{
+                'name':{
+                    minlength: "Minimum 3 Charachers",
+                    maxlength: "Maximum 3 Charachers",
+                },
+            },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
                 $('#submit').button('loading');
