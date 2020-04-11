@@ -40,7 +40,8 @@ class EntityU2qw extends Migration {
 			$table->dropColumn('created_by_id');
 			$table->dropColumn('updated_by_id');
 			$table->dropColumn('deleted_by_id');
-			$table->dropColumn('timestamps');
+			$table->dropColumn('created_at');
+			$table->dropColumn('updated_at');
 			$table->dropColumn('softDeletes');
 		});
 	}
